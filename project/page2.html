@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <title>Continent Tours</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        #notification {
+            position: fixed !important;
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 10001 !important;
+            min-width: 300px;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding-left: 0;
+            padding-right: 10px;
+            justify-content: flex-start;
+            overflow: visible;
+            white-space: nowrap;
+            margin-left: -350px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        nav ul li a:hover {
+            opacity: 0.7;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            transition: background 0.5s ease;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .hero-content h1 {
+            font-size: 60px;
+            margin: 0;
+        }
+
+        .continent-tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .continent-tab {
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
+            margin: 0 10px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+            font-size: 1rem;
+        }
+
+        .continent-tab.active {
+            background: #fff;
+            color: #333;
+        }
+
+        .continent-tab:hover {
+            opacity: 0.7;
+        }
+
+        .places-container {
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+            padding: 40px 0;
+            background-color: #f5f5f5;
+            transition: 0.5s ease-in-out;
+        }
+
+        .place {
+            display: flex;
+            flex-direction: column;
+            width: 250px;
+            margin: 15px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .place:hover {
+            transform: scale(1.05);
+        }
+
+        .place img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .place-info {
+            padding: 10px;
+        }
+
+        .place-info h3 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .place-info p {
+            margin: 10px 0;
+            color: #777;
+        }
+        .place-info a {
+            background: #007BFFFF;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .learn-more {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .learn-more:hover {
+            background-color: #0056b3;
+        }
+
+        /* Add Trip Modal Styles */
+        #addTripModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-y: auto;
+        }
+
+        #addTripModal > div {
+            background: white;
+            border-radius: 15px;
+            width: 380px;
+            max-width: 95%;
+            max-height: 90vh;
+            padding: 25px 30px 35px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: fadeInScale 0.4s ease forwards;
+            overflow-y: auto;
+        }
+
+        #addTripModal h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        #addTripModal label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 6px;
+            margin-top: 15px;
+        }
+
+        #addTripModal select,
+        #addTripModal input[type="number"],
+        #addTripModal input[type="text"],
+        #addTripModal input[type="date"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.8px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #addTripModal select:focus,
+        #addTripModal input[type="number"]:focus,
+        #addTripModal input[type="text"]:focus,
+        #addTripModal input[type="date"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+        }
+
+        #addTripModal button[type="submit"],
+        #addTripModal button[type="button"] {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        #addTripModal button[type="submit"] {
+            background: #4a90e2;
+            color: white;
+            margin-right: 15px;
+        }
+
+        #addTripModal button[type="submit"]:hover {
+            background: #357ABD;
+        }
+
+        #addTripModal button[type="button"] {
+            background: #ddd;
+            color: #444;
+        }
+
+        #addTripModal button[type="button"]:hover {
+            background: #bbb;
+        }
+
+        .date-pair {
+            border: 1.5px solid #eee;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Hide number input spinners */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        #tripMessage {
+            display: none;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .add-trip-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px auto;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 90%;
+        }
+
+        .add-trip-btn {
+            background: linear-gradient(45deg, #4a90e2, #007aff);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 22px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 6px 15px rgba(0, 122, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-trip-btn:hover {
+            background: linear-gradient(45deg, #007aff, #0051a8);
+            box-shadow: 0 8px 20px rgba(0, 81, 168, 0.6);
+        }
+
+        #addTripBox {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        #addTripBox input,
+        #addTripBox textarea {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        #addTripBox button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #addTripBox button:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" style="color: white; font-size: 1.5rem; font-weight: 700;">
+        &nbsp;&nbsp;&nbsp;&nbsp;✈ LIMITLESS JOURNEYS
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="project.html">Home</a></li>
+            <li><a href="data.html">Profile</a></li>
+            <li><a href="about2.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="hero" id="hero" style="background-image: url('imges/asia.jpeg');">
+    <div class="overlay"></div>
+    <div class="hero-content">
+        <h1 id="continentName">Asia</h1>
+    </div>
+</div>
+
+<div class="continent-tabs">
+    <div class="continent-tab active" onclick="switchContinent('Asia', event)">Asia</div>
+    <div class="continent-tab" onclick="switchContinent('Europe', event)">Europe</div>
+    <div class="continent-tab" onclick="switchContinent('North America', event)">North America</div>
+    <div class="continent-tab" onclick="switchContinent('South America', event)">South America</div>
+    <div class="continent-tab" onclick="switchContinent('Africa', event)">Africa</div>
+    <div class="continent-tab" onclick="switchContinent('Australia', event)">Australia</div>
+</div>
+
+<div id="notification" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10001; padding: 12px 24px; background-color: #2E7D32; color: white; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-family: Arial, sans-serif; font-weight: bold; text-align: center;">
+    <span id="notificationText"></span>
+</div>
+
+<!-- الرحلات الموجودة سابقاً -->
+<div class="places-container" id="placesContainer">
+    <!-- سيتم ملؤها تلقائياً عند تحميل الصفحة -->
+</div>
+
+
+<!-- Add Trip Modal -->
+<div id="addTripModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.5); z-index:10000; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:20px; border-radius:10px; width:350px; position:relative;">
+        <h3 style="text-align:center;">Add New Trip</h3>
+
+        <form id="tripForm" onsubmit="submitTrip(event)">
+            <label for="continentSelect">Continent:</label><br/>
+            <select id="continentSelect" onchange="updateDestinations()" required>
+                <option value="" disabled selected>Select Continent</option>
+                <option value="Asia">Asia</option>
+                <option value="Europe">Europe</option>
+                <option value="North America">North America</option>
+                <option value="South America">South America</option>
+                <option value="Africa">Africa</option>
+                <option value="Australia">Australia</option>
+            </select>
+
+            <select id="destinationSelect" required>
+                <option value="" disabled selected>Select Destination</option>
+            </select><br/><br/>
+
+            <h3>Choose Start Dates (multiple):</h3>
+            <input type="text" id="multiStartDates" placeholder="Select start dates" readonly><br/><br/>
+
+            <div id="datesContainer"></div>
+
+            <label for="availableSeats">Available Seats:</label><br/>
+            <input type="number" id="availableSeats" min="1" required /><br/><br/>
+
+            <label for="pricePerPerson">Price per Person:</label><br/>
+            <input type="number" id="pricePerPerson" min="0" step="0.01" required /><br/><br/>
+
+            <div style="text-align:center;">
+                <button type="submit" style="margin-right:10px;">Save</button>
+                <button type="button" onclick="closeAddTripModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="add-trip-section">
+    <button class="add-trip-btn" onclick="toggleAddTripBox()">
+        + Add New Trip
+    </button>
+
+    <div id="addTripBox">
+        <label for="tripName">Trip Name:</label>
+        <input type="text" id="tripName" placeholder="Enter trip name">
+
+        <label for="tripDesc">Description:</label>
+        <textarea id="tripDesc" placeholder="Enter description" rows="3"></textarea>
+
+        <label for="tripImg">Image URL:</label>
+        <input type="text" id="tripImg" placeholder="Enter image URL">
+
+        <button onclick="addTrip()">Add Trip</button>
+    </div>
+</div>
+
+<!-- قسم عرض الرحلات -->
+    <!-- سيتم ملؤها تلقائياً بالرحلات الأساسية والمضافة -->
+</div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    const data = {
+        'Asia': { image: 'imges/asia.jpeg', regions: [
+                { name:'Istanbul, Turkey', desc:'Historical city bridging Europe & Asia.', img:'imges/Istanbul.jpeg', link:'istanbul.html' },
+                { name:'Maldives', desc:'Tropical paradise.', img:'imges/Maldives.jpeg', link:'maldives.html' },
+                { name:'Mount Fuji, Japan', desc:'Iconic volcanic mountain.', img:'imges/Mount Fuji.jpeg', link:'mountfuji.html' },
+                { name:'Dubai, UAE', desc:'Luxury & skyscrapers.', img:'imges/Dubai.jpeg', link:'dubai.html' }
+            ]},
+        'Europe': { image: 'imges/europe.jpeg', regions: [
+                { name:'Paris, France', desc:'Lights & love.', img:'imges/paris.jpeg', link:'paris.html' },
+                { name:'Rome, Italy', desc:'Ancient wonders.', img:'imges/roma.jpeg', link:'rome.html' },
+                { name:'London, UK', desc:'Historical city.', img:'imges/london.jpeg', link:'london.html' },
+                { name:'Barcelona, Spain', desc:'Art & architecture.', img:'imges/barcelona.jpeg', link:'barcelona.html' }
+            ]},
+        'North America': { image: 'imges/north_america.jpeg', regions: [
+                { name:'New York, USA', desc:'City that never sleeps.', img:'imges/New York.jpeg', link:'newyork.html' },
+                { name:'Toronto, Canada', desc:'Diverse city.', img:'imges/toronto.jpeg', link:'toronto.html' },
+                { name:'Los Angeles, USA', desc:'Entertainment capital.', img:'imges/los angeles.jpeg', link:'losangeles.html' },
+                { name:'Vancouver, Canada', desc:'Nature and city.', img:'imges/vancouver.jpeg', link:'vancouver.html' }
+            ]},
+        'South America': { image: 'imges/south_america.jpeg', regions: [
+                { name:'Rio de Janeiro, Brazil', desc:'Beaches & samba.', img:'imges/rio de janeiro.jpeg', link:'rio.html' },
+                { name:'Buenos Aires, Argentina', desc:'Tango & steak.', img:'imges/buenos Aire.jpeg', link:'buenosaires.html' },
+                { name:'Machu Picchu, Peru', desc:'Incan city.', img:'imges/machu picchu.jpeg', link:'machupicchu.html' },
+                { name:'Santiago, Chile', desc:'Cultural hub.', img:'imges/santiago.jpeg', link:'santiago.html' }
+            ]},
+        'Africa': { image: 'imges/africa.jpeg', regions: [
+                { name:'Cape Town, South Africa', desc:'Mountains and beaches.', img:'imges/cape town.jpeg', link:'capetown.html' },
+                { name:'Marrakech, Morocco', desc:'Markets & palaces.', img:'imges/marrakech.jpeg', link:'marrakech.html' },
+                { name:'Victoria Falls, Zimbabwe', desc:'Majestic waterfall.', img:'imges/victoria falls.jpeg', link:'victoriafalls.html' },
+                { name:'Serengeti, Tanzania', desc:'Wildlife safaris.', img:'imges/Serengeti.jpeg', link:'serengeti.html' }
+            ]},
+        'Australia': { image: 'imges/australia.jpeg', regions: [
+                { name:'Sydney, Australia', desc:'Opera House & Harbour.', img:'imges/sydney.jpeg', link:'sydney.html' },
+                { name:'Melbourne, Australia', desc:'Art & coffee.', img:'imges/melbourne.jpeg', link:'melbourne.html' },
+                { name:'Great Barrier Reef', desc:'Diving paradise.', img:'imges/great barrier reef.jpeg', link:'barrierreef.html' },
+                { name:'Gold Coast, Australia', desc:'Surfing beaches.', img:'imges/gold coast.jpeg', link:'goldcoast.html' }
+            ]}
+    };
+
+    // متغير لتخزين الرحلات المضافة
+    let addedTrips = [];
+
+    // إظهار/إخفاء صندوق الإضافة
+    function toggleAddTripBox() {
+        const box = document.getElementById('addTripBox');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // إضافة رحلة جديدة
+    function addTrip() {
+        const name = document.getElementById('tripName').value.trim();
+        const desc = document.getElementById('tripDesc').value.trim();
+        const img = document.getElementById('tripImg').value.trim();
+        const currentContinent = document.getElementById('continentName').textContent;
+
+        if (!name || !desc || !img) {
+            showNotification('Please fill all fields', false);
+            return;
+        }
+
+        // إنشاء كائن الرحلة الجديدة
+        const newTrip = {
+            name,
+            desc,
+            img,
+            link: '#'
+        };
+
+        // إضافة إلى المصفوفة
+        addedTrips.push(newTrip);
+
+        // إضافة الرحلة إلى القائمة
+        const container = document.getElementById('placesContainer');
+        const place = document.createElement('div');
+        place.className = 'place';
+        place.innerHTML = `
+        <img src="${img}" alt="${name}" onerror="this.src='imges/default.jpg'">
+        <div class="place-info">
+            <h3>${name}</h3>
+            <p>${desc}</p>
+            <a href="#" class="learn-more">Learn More</a>
+        </div>
+    `;
+        container.appendChild(place);
+
+        // إعادة تعيين الحقول وإخفاء الصندوق
+        document.getElementById('tripName').value = '';
+        document.getElementById('tripDesc').value = '';
+        document.getElementById('tripImg').value = '';
+        toggleAddTripBox();
+
+        showNotification('Trip added successfully!', true);
+    }
+
+    function renderRegions(continent) {
+        const container = document.getElementById('placesContainer');
+        container.innerHTML = '';
+
+        // عرض الرحلات الأساسية
+        if (data[continent]) {
+            data[continent].regions.forEach(region => {
+                const place = document.createElement('div');
+                place.className = 'place';
+                place.innerHTML = `
+                <img src="${region.img}" alt="${region.name}">
+                <div class="place-info">
+                    <h3>${region.name}</h3>
+                    <p>${region.desc}</p>
+                    <a href="${region.link}" class="learn-more">Learn More</a>
+                </div>
+            `;
+                container.appendChild(place);
+            });
+        }
+
+        // عرض الرحلات المضافة
+        addedTrips.forEach(trip => {
+            const place = document.createElement('div');
+            place.className = 'place';
+            place.innerHTML = `
+            <img src="${trip.img}" alt="${trip.name}" onerror="this.src='imges/default.jpg'">
+            <div class="place-info">
+                <h3>${trip.name}</h3>
+                <p>${trip.desc}</p>
+                <a href="${trip.link}" class="learn-more">Learn More</a>
+            </div>
+        `;
+            container.appendChild(place);
+        });
+    }
+    function switchContinent(continent, event) {
+        document.querySelectorAll('.continent-tab').forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('hero').style.backgroundImage = `url('${data[continent].image}')`;
+        document.getElementById('continentName').textContent = continent;
+        renderRegions(continent);
+    }
+
+    function showNotification(message, isSuccess) {
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+
+        notification.style.display = 'block';
+        notification.style.backgroundColor = isSuccess ? '#2E7D32' : '#C62828';
+        notification.style.color = 'white';
+        notificationText.textContent = message;
+
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                notification.style.display = 'none';
+                notification.style.opacity = '1';
+            }, 300);
+        }, 5000);
+    }
+
+    // Update destinations based on selected continent
+    function updateDestinations() {
+        const continent = document.getElementById('continentSelect').value;
+        const destinationSelect = document.getElementById('destinationSelect');
+        destinationSelect.innerHTML = '<option value="" disabled selected>Select Destination</option>';
+
+        const destinations = {
+            Asia: ["Hanoi", "Kathmandu", "Tbilisi", "Phuket"],
+            Europe: ["Tallinn", "Riga", "Porto", "Valletta"],
+            "North America": ["Quebec", "Guadalajara", "Austin", "Seattle"],
+            "South America": ["Cusco", "Cartagena", "Salvador", "Montevideo"],
+            Africa: ["Zanzibar", "Lusaka", "Dar es Salaam", "Accra"],
+            Australia: ["Hobart", "Adelaide", "Darwin", "Canberra"]
+        };
+
+        if (destinations[continent]) {
+            destinations[continent].forEach(dest => {
+                const option = document.createElement('option');
+                option.value = dest;
+                option.textContent = dest;
+                destinationSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Open Add Trip modal
+    function openAddTripModal() {
+        document.getElementById('addTripModal').style.display = 'flex';
+    }
+
+    // Close Add Trip modal
+    function closeAddTripModal() {
+        document.getElementById('addTripModal').style.display = 'none';
+        document.getElementById('tripForm').reset();
+        document.getElementById('datesContainer').innerHTML = "";
+    }
+
+    // Handle form submit
+    function submitTrip(event) {
+        event.preventDefault();
+
+        const continent = document.getElementById('continentSelect').value;
+        const destination = document.getElementById('destinationSelect').value;
+        const seats = parseInt(document.getElementById('availableSeats').value);
+        const price = parseFloat(document.getElementById('pricePerPerson').value);
+
+        const startDates = document.getElementById('multiStartDates')._flatpickr.selectedDates;
+        const endInputs = document.querySelectorAll('#datesContainer input[type="text"]');
+
+        if (startDates.length === 0 || endInputs.length !== startDates.length) {
+            showNotification('Please select valid start and end dates', false);
+            return;
+        }
+
+        const tripsData = Array.from(endInputs).map((input, index) => ({
+            destination,
+            start_date: startDates[index].toISOString().split('T')[0],
+            end_date: input.value,
+            price_per_person: price,
+            available_seats: seats
+        }));
+
+        fetch('save_trip.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tripsData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Trip added successfully!', true);
+                    setTimeout(() => {
+                        closeAddTripModal();
+                    }, 7000);
+                } else {
+                    showNotification('Failed to add trip: ' + data.message, false);
+                }
+            })
+            .catch(error => {
+                showNotification('Connection error: ' + error.message, false);
+            });
+    }
+
+    // Initialize date picker
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#multiStartDates", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                const previousEndDates = {};
+                document.querySelectorAll('#datesContainer input[type="text"]').forEach(input => {
+                    previousEndDates[input.name] = input.value;
+                });
+
+                datesContainer.innerHTML = "";
+
+                selectedDates.forEach(date => {
+                    const dateString = date.toISOString().split('T')[0];
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "date-pair";
+
+                    const labelStart = document.createElement('div');
+                    labelStart.textContent = `📅 Start Date: ${dateString}`;
+                    labelStart.style.marginBottom = "5px";
+
+                    const labelEnd = document.createElement('label');
+                    labelEnd.textContent = "End Date:";
+                    labelEnd.style.display = "block";
+
+                    const endInput = document.createElement('input');
+                    endInput.type = "text";
+                    endInput.name = `endDate_${dateString}`;
+                    endInput.required = true;
+                    endInput.style.marginBottom = "15px";
+
+                    wrapper.appendChild(labelStart);
+                    wrapper.appendChild(labelEnd);
+                    wrapper.appendChild(endInput);
+
+                    datesContainer.appendChild(wrapper);
+
+                    flatpickr(endInput, {
+                        dateFormat: "Y-m-d",
+                        minDate: dateString,
+                        onChange: function(selectedDatesEnd, dateStrEnd, instanceEnd) {
+                            if (dateStrEnd < dateString) {
+                                alert('End date cannot be before start date!');
+                                endInput.value = '';
+                            }
+                        }
+                    });
+
+                    if (previousEndDates[endInput.name]) {
+                        endInput.value = previousEndDates[endInput.name];
+                    }
+                });
+            }
+        });
+
+        // Render initial content
+        renderRegions('Asia');
+    });
+</script>
+
+</body>
+</html>

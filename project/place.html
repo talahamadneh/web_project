@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Place Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f5f9;
+            margin: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #206a24;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            margin-bottom: 25px;
+            color: #073e0c;
+            border-bottom: 3px solid #206a24;
+            padding-bottom: 8px;
+            font-size: 1.6rem;
+        }
+
+        /* Grid: 3 columns on wide screens, 2 on medium, 1 on small */
+        .popular-areas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            text-align: center;
+        }
+
+        /* Card style for each area/restaurants/shopping spot */
+        .popular-areas-grid .area {
+            background-color: #caf0f8;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 17px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: default;
+        }
+
+        .popular-areas-grid .area:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+        }
+
+        .popular-areas-grid .area img {
+            width: 260px;      /* عرض ثابت */
+            height: 140px;     /* ارتفاع ثابت */
+            object-fit: cover; /* لضبط الصورة داخل الحاوية */
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+
+        }
+
+
+        /* Text styles inside cards */
+        .popular-areas-grid .area h3 {
+            margin: 10px 0 8px;
+            color: #073e0c;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .popular-areas-grid .area p {
+            margin: 5px 0;
+            font-weight: 600;
+            color: #073e0c;
+            font-size: 0.95rem;
+        }
+
+        /* Center item style (optional: إذا تبي تخلي عنصر معين ممتد على العمودين) */
+        .popular-areas-grid .area.center-item {
+            grid-column: 1 / -1;
+            width: 300px;
+            justify-self: center;
+        }
+
+        button {
+            background-color: #206a24;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgb(7,62,12);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #073e0c;
+        }
+        .popular-areas-grid .area .price {
+            color: #2e7d32; /* أخضر غامق */
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1 id="placeName">Loading...</h1>
+    <!-- <img id="placeImage" src="" alt="" /> -->
+    <p id="placeDesc"></p>
+
+    <div class="section">
+        <h2>📍 Popular Areas</h2>
+        <div class="popular-areas-grid" id="popularAreasList"></div>
+    </div>
+
+    <div class="section">
+        <h2>🍴 Famous Restaurants</h2>
+        <div class="popular-areas-grid" id="famousRestaurantsList"></div>
+    </div>
+
+    <div class="section">
+        <h2>🛍️ Shopping Spots</h2>
+        <div class="popular-areas-grid" id="shoppingSpotsList"></div>
+    </div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+    <button onclick="location.href='Booking.html'"
+            style="
+            background-color: #206a24;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgb(7,62,12);
+            transition: background-color 0.3s ease;
+          "
+            onmouseover="this.style.backgroundColor='#073e0c'"
+            onmouseout="this.style.backgroundColor='#206a24'">
+        Book Now
+    </button>
+</div>
+
+<script>
+    const data = {
+        'Asia': [
+            {
+                name: 'Istanbul, Turkey',
+                //img: 'imges/Istanbul.jpeg',
+                //desc: 'Historical city bridging Europe & Asia.',
+                popularAreas: [
+                    {
+                        name: 'Sultanahmet',
+                        img: 'imges/Sultanahmet.jpeg',
+                        desc: 'Visit Hagia Sophia (25€), Blue Mosque (Free), and Topkapi Palace (20€).',
+                        cost: 'Free – 25€'
+                    },
+                    {
+                        name: 'Taksim Square',
+                        img: 'imges/Taksim Square.jpeg',
+                        desc: 'Free to enter. Restaurants & cafés range from 10€ – 20€ per meal.',
+                        cost: '10€ – 20€'
+                    },
+                    {
+                        name: 'Balat',
+                        img: 'imges/Balat.jpeg',
+                        desc: 'Free to explore on foot. Local cafés range from 5€ – 10€.',
+                        cost: '5€ – 10€'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Sultanahmet Köftecisi',
+                        img: 'imges/Sultanahmet Köftecisi.jpeg',
+                        desc: 'Traditional Turkish meatballs.',
+                        rating: '4.5/5',
+                        price: '$8–15 per person'
+                    },
+                    {
+                        name: '360 Istanbul',
+                        img: 'imges/360 ISTANBUL.jpeg',
+                        desc: 'Panoramic rooftop dining.',
+                        rating: '4.7/5',
+                        price: '$30–60 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Grand Bazaar', desc: 'Haggle for souvenirs, spices, and textiles.', cost: '5€ – 50€' },
+                    { name: 'Istinye Park', desc: 'Designer shopping & luxury brands.', cost: '50€ – 300€+' }
+                ],
+                activities: [
+                    { name: 'Bosphorus Cruise', desc: 'Scenic 1 to 2 hour boat ride.', price: '10€ – 25€' },
+                    { name: 'Turkish Hammam', desc: 'Traditional bath and massage experience.', price: '20€ – 40€' }
+                ]
+            },
+
+            // تكملة مالديف
+            {
+                name: 'Maldives',
+               // img: 'imges/Maldives.jpeg',
+                //desc: 'Tropical paradise with crystal-clear waters, white sandy beaches, and vibrant coral reefs.',
+                popularAreas: [
+                    {
+                        name: 'Male City',
+                        img: 'imges/Male.jpeg',
+                        desc: 'The bustling capital city with markets and cultural landmarks.',
+                        cost: 'Free – 15$'
+                    },
+                    {
+                        name: 'Baa Atoll',
+                        img: 'imges/BaaAtoll.jpeg',
+                        desc: 'UNESCO Biosphere Reserve known for diving and snorkeling.',
+                        cost: '20$ – 100$'
+                    },
+                    {
+                        name: 'Maafushi Island',
+                        img: 'imges/Maafushi.jpeg',
+                        desc: 'Popular local island with guesthouses and affordable activities.',
+                        cost: '10$ – 50$'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Sea.Fire.Salt',
+                        img: 'imges/SeaFireSalt.jpeg',
+                        desc: 'Oceanfront dining with fresh seafood and fusion cuisine.',
+                        rating: '4.8/5',
+                        price: '$50–100 per person'
+                    },
+                    {
+                        name: 'Ithaa Undersea Restaurant',
+                        img: 'imges/Ithaa.jpeg',
+                        desc: 'Underwater dining experience beneath the Indian Ocean.',
+                        rating: '4.9/5',
+                        price: '$150–250 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Local Markets', desc: 'Handicrafts and souvenirs from local artisans.', cost: '5$ – 50$' },
+                    { name: 'Duty-Free Shops', desc: 'Electronics, perfumes, and luxury goods.', cost: 'Varies' }
+                ],
+                activities: [
+                    { name: 'Snorkeling & Diving', desc: 'Explore vibrant coral reefs and marine life.', price: '30$ – 120$' },
+                    { name: 'Sunset Dolphin Cruise', desc: 'Boat trip to watch dolphins and enjoy sunset views.', price: '40$ – 80$' }
+                ]
+            },
+
+            // تكملة جبل فوجي
+            {
+                name: 'Mount Fuji, Japan',
+                popularAreas: [
+                    {
+                        name: 'Fujinomiya Trail',
+                        img: 'imges/Fujinomiya Trail.jpeg',
+                        desc: 'Popular hiking trail with scenic views and shrines.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'Lake Kawaguchi',
+                        img: 'imges/Lake Kawaguchi.jpeg',
+                        desc: 'Beautiful lake with views of Mount Fuji and hot springs.',
+                        cost: '5$ – 20$'
+                    },
+                    {
+                        name: 'Chureito Pagoda',
+                        img: 'imges/Chureito Pagoda.jpeg',
+                        desc: 'Famous pagoda with stunning Mount Fuji backdrop.',
+                        cost: 'Free'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Hoto Fudo',
+                        img: 'imges/Hoto Fudo.jpeg',
+                        desc: 'Traditional noodle shop serving local specialties.',
+                        rating: '4.4/5',
+                        price: '$8–15 per person'
+                    },
+                    {
+                        name: 'Fujiyama Cookie',
+                        img: 'imges/FujiyamaCookie.jpeg',
+                        desc: 'Local bakery famous for Mount Fuji-shaped cookies.',
+                        rating: '4.7/5',
+                        price: '$3–7 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Fuji Visitor Center', desc: 'Souvenirs and information about Mount Fuji.', cost: 'Free – 10$' },
+                    { name: 'Gotemba Premium Outlets', desc: 'Outlet mall with international brands.', cost: 'Varies' }
+                ],
+                activities: [
+                    { name: 'Mountain Climbing', desc: 'Climb Mount Fuji during official season.', price: 'Free – 30$ permit' },
+                    { name: 'Onsen Experience', desc: 'Relax in traditional Japanese hot springs.', price: '10$ – 40$' }
+                ]
+            },
+
+            {
+                name: 'Dubai, UAE',
+                popularAreas: [
+                    {
+                        name: 'Burj Khalifa',
+                        img: 'imges/Burj Khalifa.jpeg',
+                        desc: 'The tallest building in the world offering panoramic city views.',
+                        cost: '$40 – $100'
+                    },
+                    {
+                        name: 'The Dubai Mall',
+                        img: 'imges/Dubai Mall.jpeg',
+                        desc: 'One of the world’s largest malls with shopping, dining, and entertainment.',
+                        cost: 'Free entry (shopping/dining costs vary)'
+                    },
+                    {
+                        name: 'Dubai Marina',
+                        img: 'imges/Dubai Marina.jpeg',
+                        desc: 'Scenic waterfront area with restaurants, yachts, and night views.',
+                        cost: 'Free – $50 (based on activities)'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Al Fanar Restaurant',
+                        img: 'imges/Al Fanar.jpeg',
+                        desc: 'Authentic Emirati cuisine in a traditional setting.',
+                        rating: '4.5/5',
+                        price: '$15–30 per person'
+                    },
+                    {
+                        name: 'Salt Bae Burger',
+                        img: 'imges/Salt Bae.jpeg',
+                        desc: 'Trendy spot famous for gourmet burgers and gold-plated steaks.',
+                        rating: '4.2/5',
+                        price: '$20–100 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Mall of the Emirates', desc: 'Luxury shopping center with indoor ski resort.', cost: 'Varies' },
+                    { name: 'Souk Madinat Jumeirah', desc: 'Traditional market with modern shops and restaurants.', cost: 'Free – $50' }
+                ],
+                activities: [
+                    { name: 'Desert Safari', desc: 'Experience dune bashing, camel rides, and Bedouin camps.', price: '$30 – $80' },
+                    { name: 'Skydiving', desc: 'Skydive over The Palm for a thrilling adventure.', price: '$500 – $600' }
+                ]
+            },
+            {
+                name: 'Paris, France',
+                popularAreas: [
+                    {
+                        name: 'Eiffel Tower',
+                        img: 'imges/Eiffel Tower.jpeg',
+                        desc: 'Iconic Paris landmark with observation decks and breathtaking views.',
+                        cost: '$15 – $30'
+                    },
+                    {
+                        name: 'Louvre Museum',
+                        img: 'imges/Louvre Museum.jpeg',
+                        desc: 'World-famous museum home to the Mona Lisa and countless masterpieces.',
+                        cost: '$17 – $20'
+                    },
+                    {
+                        name: 'Montmartre',
+                        img: 'imges/Montmartre.jpeg',
+                        desc: 'Historic district known for art, street performers, and the Sacré-Cœur.',
+                        cost: 'Free – $10'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Le Jules Verne',
+                        img: 'imges/Le Jules Verne.jpeg',
+                        desc: 'Upscale restaurant inside the Eiffel Tower with gourmet French cuisine.',
+                        rating: '4.6/5',
+                        price: '$100–300 per person'
+                    },
+                    {
+                        name: 'Café de Flore',
+                        img: 'imges/Cafe de Flore.jpeg',
+                        desc: 'Historic café famous for its artistic and literary clientele.',
+                        rating: '4.3/5',
+                        price: '$20–50 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Champs-Élysées', desc: 'Famous avenue with luxury brands and flagship stores.', cost: 'Varies' },
+                    { name: 'Galeries Lafayette', desc: 'Luxury department store with a glass dome and designer brands.', cost: 'Free – $$$' }
+                ],
+                activities: [
+                    { name: 'Seine River Cruise', desc: 'Romantic boat tour offering views of Paris landmarks.', price: '$15 – $30' },
+                    { name: 'Versailles Day Trip', desc: 'Explore the opulent Palace of Versailles outside Paris.', price: '$20 – $40' }
+                ]
+            }
+
+        ],
+        'Europe' :[
+            {
+            name: 'Paris, France',
+            popularAreas: [
+                {
+                    name: 'Eiffel Tower',
+                    img: 'imges/Eiffel Tower.jpeg',
+                    desc: 'Iconic Paris landmark with observation decks and breathtaking views.',
+                    cost: '$15 – $30'
+                },
+                {
+                    name: 'Louvre Museum',
+                    img: 'imges/Louvre Museum.jpeg',
+                    desc: 'World-famous museum home to the Mona Lisa and countless masterpieces.',
+                    cost: '$17 – $20'
+                },
+                {
+                    name: 'Montmartre',
+                    img: 'imges/Montmartre.jpeg',
+                    desc: 'Historic district known for art, street performers, and the Sacré-Cœur.',
+                    cost: 'Free – $10'
+                }
+            ],
+            famousRestaurants: [
+                {
+                    name: 'Le Jules Verne',
+                    img: 'imges/Le Jules Verne.jpeg',
+                    desc: 'Upscale restaurant inside the Eiffel Tower with gourmet French cuisine.',
+                    rating: '4.6/5',
+                    price: '$100–300 per person'
+                },
+                {
+                    name: 'Café de Flore',
+                    img: 'imges/Café de Flore.jpeg',
+                    desc: 'Historic café famous for its artistic and literary clientele.',
+                    rating: '4.3/5',
+                    price: '$20–50 per person'
+                }
+            ],
+            shoppingSpots: [
+                { name: 'Champs-Élysées', desc: 'Famous avenue with luxury brands and flagship stores.', cost: 'Varies' },
+                { name: 'Galeries Lafayette', desc: 'Luxury department store with a glass dome and designer brands.', cost: 'Free – $$$' }
+            ],
+            activities: [
+                { name: 'Seine River Cruise', desc: 'Romantic boat tour offering views of Paris landmarks.', price: '$15 – $30' },
+                { name: 'Versailles Day Trip', desc: 'Explore the opulent Palace of Versailles outside Paris.', price: '$20 – $40' }
+            ]
+        } ,
+            {
+                name: 'Rome, Italy',
+                popularAreas: [
+                    {
+                        name: 'Colosseum',
+                        img: 'imges/Colosseum.jpeg',
+                        desc: 'Ancient Roman amphitheater and one of the most iconic landmarks in Rome.',
+                        cost: '$16 – $25'
+                    },
+                    {
+                        name: 'Trevi Fountain',
+                        img: 'imges/Trevi Fountain.jpeg',
+                        desc: 'Baroque masterpiece where visitors toss coins for good luck.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'Vatican City',
+                        img: 'imges/Vatican City.jpeg',
+                        desc: 'Independent city-state home to the Pope, St. Peter’s Basilica, and the Sistine Chapel.',
+                        cost: '$15 – $25'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Roscioli',
+                        img: 'imges/Roscioli.jpeg',
+                        desc: 'Traditional Roman restaurant combining deli, wine bar, and gourmet dining.',
+                        rating: '4.5/5',
+                        price: '$20–50 per person'
+                    },
+                    {
+                        name: 'Trattoria Da Enzo al 29',
+                        img: 'imges/Da Enzo.jpeg',
+                        desc: 'Cozy trattoria known for classic Roman pasta dishes.',
+                        rating: '4.6/5',
+                        price: '$15–30 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Via del Corso', desc: 'Popular shopping street with high-street fashion and Italian brands.', cost: 'Varies' },
+                    { name: 'Campo de’ Fiori Market', desc: 'Lively open-air market offering local produce and souvenirs.', cost: 'Free – $20' }
+                ],
+                activities: [
+                    { name: 'Roman Forum Tour', desc: 'Walk through ruins of ancient government buildings and temples.', price: '$10 – $20' },
+                    { name: 'Gelato Tasting', desc: 'Enjoy a variety of authentic Italian gelato flavors.', price: '$3 – $10' }
+                ]
+            },
+            {
+                name: 'London, UK',
+                popularAreas: [
+                    {
+                        name: 'Big Ben & Westminster',
+                        img: 'imges/Big Ben.jpeg',
+                        desc: 'Iconic clock tower and historic Parliament buildings by the River Thames.',
+                        cost: 'Free – $20'
+                    },
+                    {
+                        name: 'Tower of London',
+                        img: 'imges/Tower of London.jpeg',
+                        desc: 'Historic fortress home to the Crown Jewels and royal history.',
+                        cost: '$30 – $40'
+                    },
+                    {
+                        name: 'Hyde Park',
+                        img: 'imges/Hyde Park.jpeg',
+                        desc: 'One of London’s largest parks, ideal for walks, boating, and relaxing.',
+                        cost: 'Free'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Dishoom',
+                        img: 'imges/Dishoom.jpeg',
+                        desc: 'Trendy Bombay-style café serving Indian dishes with a British twist.',
+                        rating: '4.7/5',
+                        price: '$20–40 per person'
+                    },
+                    {
+                        name: 'Sketch',
+                        img: 'imges/Sketch.jpeg',
+                        desc: 'Luxury restaurant known for its artistic décor and afternoon tea experience.',
+                        rating: '4.5/5',
+                        price: '$60–150 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Oxford Street', desc: 'Famous shopping street with major retailers and fashion brands.', cost: 'Varies' },
+                    { name: 'Camden Market', desc: 'Eclectic market offering food, clothes, art, and music.', cost: 'Free – $50' }
+                ],
+                activities: [
+                    { name: 'London Eye Ride', desc: 'Giant Ferris wheel offering panoramic views of the city.', price: '$30 – $40' },
+                    { name: 'Thames River Cruise', desc: 'Boat tour showcasing London landmarks from the water.', price: '$15 – $35' }
+                ]
+            } ,
+            {
+                name: 'Barcelona, Spain',
+                popularAreas: [
+                    {
+                        name: 'La Sagrada Família',
+                        img: 'imges/La Sagrada Familia.jpeg',
+                        desc: 'Famous basilica designed by Antoni Gaudí, known for its unique architecture.',
+                        cost: '$20 – $35'
+                    },
+                    {
+                        name: 'Park Güell',
+                        img: 'imges/Park Guell.jpeg',
+                        desc: 'Colorful public park filled with Gaudí’s mosaics, sculptures, and gardens.',
+                        cost: '$10 – $15'
+                    },
+                    {
+                        name: 'Gothic Quarter',
+                        img: 'imges/Gothic Quarter.jpeg',
+                        desc: 'Historic district with narrow medieval streets, shops, and tapas bars.',
+                        cost: 'Free – $10'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Tickets Bar',
+                        img: 'imges/Tickets Bar.jpeg',
+                        desc: 'Renowned tapas restaurant offering creative, Michelin-starred cuisine.',
+                        rating: '4.6/5',
+                        price: '$80–150 per person'
+                    },
+                    {
+                        name: 'Can Culleretes',
+                        img: 'imges/Can Culleretes.jpeg',
+                        desc: 'Barcelona’s oldest restaurant serving traditional Catalan dishes.',
+                        rating: '4.4/5',
+                        price: '$20–40 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Passeig de Gràcia', desc: 'Upscale shopping street with designer brands and modernist buildings.', cost: 'Varies' },
+                    { name: 'La Boqueria Market', desc: 'Famous food market offering local delicacies and fresh produce.', cost: 'Free – $20' }
+                ],
+                activities: [
+                    { name: 'Beach Day at Barceloneta', desc: 'Relax or play sports at the city’s most popular beach.', price: 'Free' },
+                    { name: 'Flamenco Show', desc: 'Enjoy a live performance of traditional Spanish dance and music.', price: '$25 – $50' }
+                ]
+            },
+            {
+                name: 'New York, USA',
+                popularAreas: [
+                    {
+                        name: 'Times Square',
+                        img: 'imges/Times Square.jpeg',
+                        desc: 'Vibrant hub of entertainment, lights, and Broadway theaters.',
+                        cost: 'Free – $100 (depending on shows)'
+                    },
+                    {
+                        name: 'Central Park',
+                        img: 'imges/Central Park.jpeg',
+                        desc: 'Massive urban park offering nature, boating, and walking trails.',
+                        cost: 'Free – $20'
+                    },
+                    {
+                        name: 'Statue of Liberty',
+                        img: 'imges/Statue of Liberty.jpeg',
+                        desc: 'Iconic American monument accessible by ferry with museum exhibits.',
+                        cost: '$20 – $30'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Katz’s Delicatessen',
+                        img: 'imges/Katz Deli.jpeg',
+                        desc: 'Historic deli famous for its pastrami sandwiches and classic NYC vibe.',
+                        rating: '4.5/5',
+                        price: '$15–30 per person'
+                    },
+                    {
+                        name: 'Le Bernardin',
+                        img: 'imges/Le Bernardin.jpeg',
+                        desc: 'Michelin-starred French seafood restaurant known for elegant dining.',
+                        rating: '4.8/5',
+                        price: '$120–300 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Fifth Avenue', desc: 'Luxury shopping street with flagship stores and designer brands.', cost: 'Varies' },
+                    { name: 'Chelsea Market', desc: 'Trendy indoor market with food, crafts, and boutique shops.', cost: 'Free – $50' }
+                ],
+                activities: [
+                    { name: 'Broadway Show', desc: 'Watch world-class theater productions in the Broadway district.', price: '$40 – $200' },
+                    { name: 'Empire State Building Observation Deck', desc: 'Enjoy panoramic views of NYC from the iconic skyscraper.', price: '$30 – $50' }
+                ]
+            }
+
+
+        ],
+        'North America' : [
+            {
+                name: 'New York, USA',
+                popularAreas: [
+                    {
+                        name: 'Times Square',
+                        img: 'imges/Times Square.jpeg',
+                        desc: 'Vibrant hub of entertainment, lights, and Broadway theaters.',
+                        cost: 'Free – $100 (depending on shows)'
+                    },
+                    {
+                        name: 'Central Park',
+                        img: 'imges/Central Park.jpeg',
+                        desc: 'Massive urban park offering nature, boating, and walking trails.',
+                        cost: 'Free – $20'
+                    },
+                    {
+                        name: 'Statue of Liberty',
+                        img: 'imges/Statue of Liberty.jpeg',
+                        desc: 'Iconic American monument accessible by ferry with museum exhibits.',
+                        cost: '$20 – $30'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Katz’s Delicatessen',
+                        img: 'imges/Katz Deli.jpeg',
+                        desc: 'Historic deli famous for its pastrami sandwiches and classic NYC vibe.',
+                        rating: '4.5/5',
+                        price: '$15–30 per person'
+                    },
+                    {
+                        name: 'Le Bernardin',
+                        img: 'imges/Le Bernardin.jpeg',
+                        desc: 'Michelin-starred French seafood restaurant known for elegant dining.',
+                        rating: '4.8/5',
+                        price: '$120–300 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Fifth Avenue', desc: 'Luxury shopping street with flagship stores and designer brands.', cost: 'Varies' },
+                    { name: 'Chelsea Market', desc: 'Trendy indoor market with food, crafts, and boutique shops.', cost: 'Free – $50' }
+                ],
+                activities: [
+                    { name: 'Broadway Show', desc: 'Watch world-class theater productions in the Broadway district.', price: '$40 – $200' },
+                    { name: 'Empire State Building Observation Deck', desc: 'Enjoy panoramic views of NYC from the iconic skyscraper.', price: '$30 – $50' }
+                ]
+            } ,
+            {
+                name: 'Toronto, Canada',
+                popularAreas: [
+                    {
+                        name: 'CN Tower',
+                        img: 'imges/CN Tower.jpeg',
+                        desc: 'Iconic tower offering panoramic city views and a glass floor experience.',
+                        cost: '$25 – $40'
+                    },
+                    {
+                        name: 'Royal Ontario Museum',
+                        img: 'imges/Royal Ontario Museum.jpeg',
+                        desc: 'One of the largest museums in North America with diverse exhibits.',
+                        cost: '$17 – $25'
+                    },
+                    {
+                        name: 'Distillery District',
+                        img: 'imges/Distillery District.jpeg',
+                        desc: 'Historic area with cobblestone streets, galleries, and artisanal shops.',
+                        cost: 'Free – $10'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Alo Restaurant',
+                        img: 'imges/Alo Restaurant.jpeg',
+                        desc: 'Fine dining spot offering contemporary French cuisine with tasting menus.',
+                        rating: '4.7/5',
+                        price: '$100–200 per person'
+                    },
+                    {
+                        name: 'Pai',
+                        img: 'imges/Pai.jpeg',
+                        desc: 'Popular Thai restaurant known for authentic street-style dishes.',
+                        rating: '4.6/5',
+                        price: '$20–40 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Eaton Centre', desc: 'Large shopping mall in downtown Toronto with a wide range of stores.', cost: 'Varies' },
+                    { name: 'Kensington Market', desc: 'Eclectic neighborhood with vintage shops, food stalls, and unique finds.', cost: 'Free – $50' }
+                ],
+                activities: [
+                    { name: 'Harbourfront Walk', desc: 'Stroll along Lake Ontario’s edge with parks, art, and scenic views.', price: 'Free' },
+                    { name: 'Toronto Islands Ferry', desc: 'Take a ferry to the Toronto Islands for beaches and biking.', price: '$5 – $10' }
+                ]
+            } , {
+                name: 'Los Angeles, USA',
+                popularAreas: [
+                    {
+                        name: 'Hollywood Walk of Fame',
+                        img: 'imges/Hollywood Walk of Fame.jpeg',
+                        desc: 'Famous sidewalk honoring celebrities with stars, near theaters and museums.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'Santa Monica Pier',
+                        img: 'imges/Santa Monica Pier.jpeg',
+                        desc: 'Classic pier with amusement rides, restaurants, and ocean views.',
+                        cost: 'Free – $20'
+                    },
+                    {
+                        name: 'Griffith Observatory',
+                        img: 'imges/Griffith Observatory.jpeg',
+                        desc: 'Observatory offering exhibits, telescopes, and views of the Hollywood sign.',
+                        cost: 'Free – $10'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'In-N-Out Burger',
+                        img: 'imges/InNOut.jpeg',
+                        desc: 'Iconic West Coast fast food chain known for fresh burgers and fries.',
+                        rating: '4.5/5',
+                        price: '$5–15 per person'
+                    },
+                    {
+                        name: 'Bestia',
+                        img: 'imges/Bestia.jpeg',
+                        desc: 'Trendy Italian restaurant in a rustic industrial space, loved by locals.',
+                        rating: '4.6/5',
+                        price: '$30–70 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Rodeo Drive', desc: 'Luxury shopping street in Beverly Hills featuring designer brands.', cost: 'Varies' },
+                    { name: 'The Grove', desc: 'Popular outdoor shopping center with boutiques, dining, and entertainment.', cost: 'Free – $$$' }
+                ],
+                activities: [
+                    { name: 'Studio Tour at Universal', desc: 'Behind-the-scenes tour of movie sets and studios.', price: '$100 – $140' },
+                    { name: 'Venice Beach Boardwalk', desc: 'Lively beachside walkway with street performers and skate parks.', price: 'Free' }
+                ]
+            },
+            {
+                name: 'Vancouver, Canada',
+                popularAreas: [
+                    {
+                        name: 'Stanley Park',
+                        img: 'imges/Stanley Park.jpeg',
+                        desc: 'Massive urban park with scenic seawall, gardens, and beaches.',
+                        cost: 'Free – $15'
+                    },
+                    {
+                        name: 'Granville Island',
+                        img: 'imges/Granville Island.jpeg',
+                        desc: 'Vibrant market area with food stalls, artisan shops, and waterfront views.',
+                        cost: 'Free – $20'
+                    },
+                    {
+                        name: 'Capilano Suspension Bridge',
+                        img: 'imges/Capilano Suspension Bridge.jpeg',
+                        desc: 'Famous suspension bridge and forested trails with breathtaking views.',
+                        cost: '$18 – $50'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Miku',
+                        img: 'imges/Miku.jpeg',
+                        desc: 'Upscale Japanese restaurant known for aburi sushi and waterfront views.',
+                        rating: '4.7/5',
+                        price: '$40–80 per person'
+                    },
+                    {
+                        name: 'The Naam',
+                        img: 'imges/The Naam.jpeg',
+                        desc: 'Legendary 24-hour vegetarian restaurant with hearty dishes and cozy vibes.',
+                        rating: '4.4/5',
+                        price: '$15–30 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Robson Street', desc: 'Bustling shopping street with global brands and cafés.', cost: 'Varies' },
+                    { name: 'Pacific Centre Mall', desc: 'Downtown shopping mall with department stores and boutiques.', cost: 'Free – $$$' }
+                ],
+                activities: [
+                    { name: 'Grouse Mountain', desc: 'Hiking, skiing, and zip-lining with views of the city.', price: '$20 – $60' },
+                    { name: 'Kayaking in False Creek', desc: 'Paddle through calm waters near the city skyline.', price: '$25 – $50' }
+                ]
+            }
+            ],
+        'South America' :[
+            {
+                name: 'Rio de Janeiro, Brazil',
+                popularAreas: [
+                    {
+                        name: 'Christ the Redeemer',
+                        img: 'imges/Christ the Redeemer.jpeg',
+                        desc: 'Iconic statue atop Corcovado Mountain with panoramic city views.',
+                        cost: '$10 – $20'
+                    },
+                    {
+                        name: 'Copacabana Beach',
+                        img: 'imges/Copacabana Beach.jpeg',
+                        desc: 'World-famous beach with white sand, vibrant life, and ocean views.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'Sugarloaf Mountain',
+                        img: 'imges/Sugarloaf Mountain.jpeg',
+                        desc: 'Granite peak offering cable car rides and stunning sunset views.',
+                        cost: '$20 – $35'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Aprazível',
+                        img: 'imges/Aprazivel.jpeg',
+                        desc: 'Elegant hilltop restaurant serving Brazilian cuisine with city views.',
+                        rating: '4.6/5',
+                        price: '$30–70 per person'
+                    },
+                    {
+                        name: 'Churrascaria Palace',
+                        img: 'imges/Churrascaria Palace.jpeg',
+                        desc: 'Traditional Brazilian steakhouse offering a variety of meats.',
+                        rating: '4.5/5',
+                        price: '$25–50 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Rio Sul Shopping Center', desc: 'Large mall with local and international brands.', cost: 'Varies' },
+                    { name: 'Feira Hippie de Ipanema', desc: 'Sunday art and craft market with local products.', cost: 'Free – $30' }
+                ],
+                activities: [
+                    { name: 'Samba Show', desc: 'Experience live samba music and dance performances.', price: '$20 – $50' },
+                    { name: 'Favela Tour', desc: 'Guided tour to learn about the culture and daily life in local favelas.', price: '$15 – $35' }
+                ]
+            } ,
+            {
+                name: 'Buenos Aires, Argentina',
+                popularAreas: [
+                    {
+                        name: 'La Boca',
+                        img: 'imges/La Boca.jpeg',
+                        desc: 'Colorful neighborhood famous for street art, tango, and Caminito Street.',
+                        cost: 'Free – $10'
+                    },
+                    {
+                        name: 'Recoleta Cemetery',
+                        img: 'imges/Recoleta Cemetery.jpeg',
+                        desc: 'Historic cemetery where Eva Perón is buried, with ornate mausoleums.',
+                        cost: 'Free – $5'
+                    },
+                    {
+                        name: 'Plaza de Mayo',
+                        img: 'imges/Plaza de Mayo.jpeg',
+                        desc: 'Central square surrounded by important historical buildings like Casa Rosada.',
+                        cost: 'Free'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Don Julio',
+                        img: 'imges/Don Julio.jpeg',
+                        desc: 'Top-rated parrilla known for its premium Argentine steaks.',
+                        rating: '4.7/5',
+                        price: '$25–60 per person'
+                    },
+                    {
+                        name: 'Café Tortoni',
+                        img: 'imges/Cafe Tortoni.jpeg',
+                        desc: 'Historic café with elegant interiors, tango shows, and classic menu.',
+                        rating: '4.4/5',
+                        price: '$10–25 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Galerías Pacífico', desc: 'Upscale shopping mall with murals and designer stores.', cost: 'Varies' },
+                    { name: 'San Telmo Market', desc: 'Traditional market with antiques, crafts, and food stalls.', cost: 'Free – $20' }
+                ],
+                activities: [
+                    { name: 'Tango Show', desc: 'Enjoy a live tango performance in an elegant venue.', price: '$20 – $80' },
+                    { name: 'Bike Tour', desc: 'Explore city neighborhoods and parks on a guided bicycle tour.', price: '$15 – $40' }
+                ]
+            } ,
+            {
+                name: 'Machu Picchu, Peru',
+                popularAreas: [
+                    {
+                        name: 'Machu Picchu Citadel',
+                        img: 'imges/Machu Picchu Citadel.jpeg',
+                        desc: 'Ancient Incan city set high in the Andes, one of the New Seven Wonders of the World.',
+                        cost: '$40 – $70'
+                    },
+                    {
+                        name: 'Huayna Picchu',
+                        img: 'imges/Huayna Picchu.jpeg',
+                        desc: 'Steep mountain offering a challenging hike and panoramic views of Machu Picchu.',
+                        cost: '$15 – $25 (with main ticket)'
+                    },
+                    {
+                        name: 'Aguas Calientes',
+                        img: 'imges/Aguas Calientes.jpeg',
+                        desc: 'Town at the base of Machu Picchu with hot springs, markets, and restaurants.',
+                        cost: 'Free – $10'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Indio Feliz Bistro',
+                        img: 'imges/Indio Feliz Bistro.jpeg',
+                        desc: 'Popular fusion restaurant in Aguas Calientes serving Peruvian and French dishes.',
+                        rating: '4.6/5',
+                        price: '$20–40 per person'
+                    },
+                    {
+                        name: 'Toto’s House',
+                        img: 'imges/Totos House.jpeg',
+                        desc: 'Spacious restaurant with buffet options and scenic views of the Urubamba River.',
+                        rating: '4.3/5',
+                        price: '$15–35 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Mercado Artesanal', desc: 'Local artisan market in Aguas Calientes with souvenirs and crafts.', cost: 'Free – $20' },
+                    { name: 'Pisac Market (nearby)', desc: 'Colorful market in the Sacred Valley offering traditional textiles and jewelry.', cost: 'Varies' }
+                ],
+                activities: [
+                    { name: 'Guided Citadel Tour', desc: 'Learn the history and architecture of the Incan city from a professional guide.', price: '$20 – $50' },
+                    { name: 'Hot Springs Visit', desc: 'Relax in natural thermal baths in Aguas Calientes.', price: '$3 – $10' }
+                ]
+            },
+            {
+                name: 'Santiago, Chile',
+                popularAreas: [
+                    {
+                        name: 'Cerro San Cristóbal',
+                        img: 'imges/Cerro San Cristobal.jpeg',
+                        desc: 'Hilltop park with panoramic views, a funicular, and a large Virgin Mary statue.',
+                        cost: 'Free – $5 (funicular fee)'
+                    },
+                    {
+                        name: 'Plaza de Armas',
+                        img: 'imges/Plaza de Armas.jpeg',
+                        desc: 'Historic city square surrounded by colonial buildings and street artists.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'Barrio Bellavista',
+                        img: 'imges/Barrio Bellavista.jpeg',
+                        desc: 'Lively bohemian neighborhood known for street art, nightlife, and restaurants.',
+                        cost: 'Free – Varies'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Bocanáriz',
+                        img: 'imges/Bocanariz.jpeg',
+                        desc: 'Renowned wine bar and restaurant offering Chilean cuisine and wine pairings.',
+                        rating: '4.7/5',
+                        price: '$25–50 per person'
+                    },
+                    {
+                        name: 'Liguria',
+                        img: 'imges/Liguria.jpeg',
+                        desc: 'Popular eatery known for traditional Chilean dishes in a vibrant setting.',
+                        rating: '4.4/5',
+                        price: '$15–30 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Costanera Center', desc: 'South America’s tallest building with a shopping mall and observation deck.', cost: 'Free – $$$' },
+                    { name: 'Pueblito Los Dominicos', desc: 'Craft village offering handmade goods and traditional Chilean items.', cost: 'Free – $20' }
+                ],
+                activities: [
+                    { name: 'Wine Tasting Tour', desc: 'Visit nearby vineyards and sample world-class Chilean wines.', price: '$30 – $100' },
+                    { name: 'Museum of Memory and Human Rights', desc: 'Powerful museum documenting Chile’s recent history.', price: 'Free – $5' }
+                ]
+            } ],
+        'Africa' :[
+            {
+                name: 'Cape Town, South Africa',
+                popularAreas: [
+                    {
+                        name: 'Table Mountain',
+                        img: 'imges/Table Mountain.jpeg',
+                        desc: 'Famous flat-topped mountain offering hiking trails and a cable car with breathtaking views.',
+                        cost: 'Free – $25 (cable car fee)'
+                    },
+                    {
+                        name: 'V&A Waterfront',
+                        img: 'imges/V&A Waterfront.jpeg',
+                        desc: 'Popular shopping and dining area with harbor views and entertainment options.',
+                        cost: 'Free – Varies'
+                    },
+                    {
+                        name: 'Bo-Kaap',
+                        img: 'imges/Bo-Kaap.jpeg',
+                        desc: 'Historic neighborhood with colorful houses and rich Cape Malay culture.',
+                        cost: 'Free'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'The Test Kitchen',
+                        img: 'imges/The Test Kitchen.jpeg',
+                        desc: 'Award-winning fine dining restaurant known for creative tasting menus.',
+                        rating: '4.8/5',
+                        price: '$50–120 per person'
+                    },
+                    {
+                        name: 'Gold Restaurant',
+                        img: 'imges/Gold Restaurant.jpeg',
+                        desc: 'African-themed dining experience with traditional dishes and live performances.',
+                        rating: '4.6/5',
+                        price: '$30–60 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Greenmarket Square', desc: 'Open-air market with local crafts, art, and souvenirs.', cost: 'Free – $20' },
+                    { name: 'Canal Walk Shopping Centre', desc: 'One of Africa’s largest malls featuring international and local brands.', cost: 'Varies' }
+                ],
+                activities: [
+                    { name: 'Robben Island Tour', desc: 'Historical tour of the island where Nelson Mandela was imprisoned.', price: '$25 – $35' },
+                    { name: 'Cape Point Day Trip', desc: 'Explore the scenic Cape of Good Hope and its wildlife.', price: '$30 – $60' }
+                ]
+            } ,
+            {
+                name: 'Marrakech, Morocco',
+                popularAreas: [
+                    {
+                        name: 'Jemaa el-Fnaa',
+                        img: 'imges/Jemaa el-Fnaa.jpeg',
+                        desc: 'Vibrant main square with street performers, food stalls, and traditional markets.',
+                        cost: 'Free – Varies'
+                    },
+                    {
+                        name: 'Majorelle Garden',
+                        img: 'imges/Majorelle Garden.jpeg',
+                        desc: 'Peaceful botanical garden with exotic plants and the Berber Museum.',
+                        cost: '$5 – $12'
+                    },
+                    {
+                        name: 'Bahia Palace',
+                        img: 'imges/Bahia Palace.jpeg',
+                        desc: 'Historic palace with beautiful gardens and intricate Moroccan architecture.',
+                        cost: '$2 – $7'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Le Jardin',
+                        img: 'imges/Le Jardin.jpeg',
+                        desc: 'Charming garden restaurant serving Moroccan and international cuisine.',
+                        rating: '4.4/5',
+                        price: '$10–25 per person'
+                    },
+                    {
+                        name: 'Nomad',
+                        img: 'imges/Nomad.jpeg',
+                        desc: 'Modern Moroccan dishes served on a rooftop terrace with medina views.',
+                        rating: '4.5/5',
+                        price: '$12–30 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Souk Semmarine', desc: 'Bustling market offering spices, textiles, and traditional crafts.', cost: 'Free – Varies' },
+                    { name: 'Ensemble Artisanal', desc: 'Government-run cooperative with fixed prices on local handmade goods.', cost: 'Free – $20' }
+                ],
+                activities: [
+                    { name: 'Hammam Experience', desc: 'Traditional Moroccan spa with steam, scrubs, and massages.', price: '$10 – $40' },
+                    { name: 'Desert Excursion', desc: 'Day or overnight trip to the Agafay Desert or Sahara dunes.', price: '$50 – $150' }
+                ]
+            } ,
+            {
+                name: 'Victoria Falls, Zimbabwe',
+                popularAreas: [
+                    {
+                        name: 'Victoria Falls National Park',
+                        img: 'imges/Victoria Falls National Park.jpeg',
+                        desc: 'Home to one of the largest and most famous waterfalls in the world.',
+                        cost: '$20 – $30'
+                    },
+                    {
+                        name: 'Zambezi River',
+                        img: 'imges/Zambezi River.jpeg',
+                        desc: 'Popular for boat cruises, wildlife viewing, and breathtaking sunsets.',
+                        cost: '$30 – $70'
+                    },
+                    {
+                        name: 'Devil’s Pool',
+                        img: 'imges/Devils Pool.jpeg',
+                        desc: 'Natural rock pool at the edge of the falls, offering a thrilling swim.',
+                        cost: '$90 – $120'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'The Boma – Dinner & Drum Show',
+                        img: 'imges/Boma Dinner.jpeg',
+                        desc: 'Unique dining experience with traditional Zimbabwean cuisine and live entertainment.',
+                        rating: '4.5/5',
+                        price: '$30–50 per person'
+                    },
+                    {
+                        name: 'Lookout Café',
+                        img: 'imges/Lookout Cafe.jpeg',
+                        desc: 'Open-air café with panoramic views over the Batoka Gorge.',
+                        rating: '4.6/5',
+                        price: '$15–30 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Elephant’s Walk Shopping & Artist Village', desc: 'Craft market with handmade art, jewelry, and souvenirs.', cost: 'Free – $25' },
+                    { name: 'Victoria Falls Craft Market', desc: 'Traditional market offering carvings, masks, and local crafts.', cost: 'Bargain-based' }
+                ],
+                activities: [
+                    { name: 'Helicopter Flight', desc: 'Aerial tour offering stunning views of the falls and the Zambezi.', price: '$150 – $300' },
+                    { name: 'White Water Rafting', desc: 'Thrilling adventure on the rapids of the Zambezi River.', price: '$120 – $160' }
+                ]
+            },
+            {
+                name: 'Serengeti, Tanzania',
+                popularAreas: [
+                    {
+                        name: 'Serengeti National Park',
+                        img: 'imges/Serengeti National Park.jpeg',
+                        desc: 'Vast savannah home to the Big Five and the Great Migration.',
+                        cost: '$60 – $100 (entry fees)'
+                    },
+                    {
+                        name: 'Grumeti River',
+                        img: 'imges/Grumeti River.jpeg',
+                        desc: 'Famous for crocodile sightings and part of the wildebeest migration route.',
+                        cost: 'Included in park entry'
+                    },
+                    {
+                        name: 'Ndutu Region',
+                        img: 'imges/Ndutu Region.jpeg',
+                        desc: 'Prime area to witness calving season and predator action.',
+                        cost: 'Varies with safari package'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Serengeti Serena Safari Lodge Restaurant',
+                        img: 'imges/Serena Safari Lodge.jpeg',
+                        desc: 'Lodge dining offering local and international cuisine with scenic views.',
+                        rating: '4.5/5',
+                        price: '$30–50 per person'
+                    },
+                    {
+                        name: 'Melia Serengeti Lodge Restaurant',
+                        img: 'imges/Melia Serengeti.jpeg',
+                        desc: 'Luxury lodge restaurant offering gourmet meals in the wild.',
+                        rating: '4.7/5',
+                        price: '$50–80 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Cultural Heritage Centre – Arusha', desc: 'Sells Tanzanian art, carvings, and souvenirs before entering Serengeti.', cost: 'Free – $100+' },
+                    { name: 'Local Maasai Markets', desc: 'Handmade jewelry, fabrics, and crafts by Maasai communities.', cost: '$5 – $30' }
+                ],
+                activities: [
+                    { name: 'Game Drives', desc: 'Daily wildlife viewing safaris in open vehicles.', price: '$150 – $400' },
+                    { name: 'Hot Air Balloon Safari', desc: 'Sunrise balloon ride with aerial views of the plains.', price: '$500 – $600' }
+                ]
+            }
+        ],
+        'Australia':[
+            {
+                name: 'Sydney, Australia',
+                popularAreas: [
+                    {
+                        name: 'Sydney Opera House',
+                        img: 'imges/Sydney Opera House.jpeg',
+                        desc: 'Iconic performing arts venue and architectural marvel on Sydney Harbour.',
+                        cost: '$25 – $50 (tours and shows)'
+                    },
+                    {
+                        name: 'Bondi Beach',
+                        img: 'imges/Bondi Beach.jpeg',
+                        desc: 'World-famous beach known for surfing, coastal walks, and vibrant cafes.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'The Rocks',
+                        img: 'imges/The Rocks.jpeg',
+                        desc: 'Historic neighborhood with markets, pubs, and views of the Harbour Bridge.',
+                        cost: 'Free – $15'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Quay',
+                        img: 'imges/Quay.jpeg',
+                        desc: 'Fine dining with innovative Australian cuisine and Harbour views.',
+                        rating: '4.6/5',
+                        price: '$150–300 per person'
+                    },
+                    {
+                        name: 'The Grounds of Alexandria',
+                        img: 'imges/The Grounds of Alexandria.jpeg',
+                        desc: 'Trendy restaurant and garden space offering brunch and artisan coffee.',
+                        rating: '4.5/5',
+                        price: '$20–50 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Queen Victoria Building (QVB)', desc: 'Historic shopping arcade with high-end boutiques and cafes.', cost: 'Free – $$$' },
+                    { name: 'Pitt Street Mall', desc: 'Popular pedestrian shopping area with international brands.', cost: 'Varies' }
+                ],
+                activities: [
+                    { name: 'Sydney Harbour Cruise', desc: 'Scenic boat tour of the harbour and landmarks.', price: '$25 – $60' },
+                    { name: 'BridgeClimb Sydney', desc: 'Climb the Sydney Harbour Bridge for panoramic views.', price: '$150 – $300' }
+                ]
+            },
+            {
+                name: 'Melbourne, Australia',
+                popularAreas: [
+                    {
+                        name: 'Federation Square',
+                        img: 'imges/Federation Square.jpeg',
+                        desc: 'Cultural precinct with museums, galleries, and events in the heart of the city.',
+                        cost: 'Free – $20'
+                    },
+                    {
+                        name: 'Royal Botanic Gardens',
+                        img: 'imges/Royal Botanic Gardens Melbourne.jpeg',
+                        desc: 'Beautiful gardens with diverse plant species and peaceful walking paths.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'St Kilda Beach',
+                        img: 'imges/St Kilda Beach.jpeg',
+                        desc: 'Popular beach for sunsets, penguin sightings, and seaside cafes.',
+                        cost: 'Free'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Attica',
+                        img: 'imges/Attica.jpeg',
+                        desc: 'Award-winning fine dining restaurant featuring creative Australian cuisine.',
+                        rating: '4.7/5',
+                        price: '$200–300 per person'
+                    },
+                    {
+                        name: 'Chin Chin',
+                        img: 'imges/Chin Chin.jpeg',
+                        desc: 'Trendy eatery offering modern Thai dishes in a vibrant atmosphere.',
+                        rating: '4.4/5',
+                        price: '$25–60 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Bourke Street Mall', desc: 'Bustling pedestrian shopping street with major retailers.', cost: 'Varies' },
+                    { name: 'Queen Victoria Market', desc: 'Historic market offering fresh produce, souvenirs, and food stalls.', cost: 'Free – $30' }
+                ],
+                activities: [
+                    { name: 'Great Ocean Road Day Trip', desc: 'Scenic coastal drive with rock formations and beaches.', price: '$50 – $120' },
+                    { name: 'Melbourne Art Tour', desc: 'Explore vibrant street art and local galleries.', price: 'Free – $25' }
+                ]
+            },
+            {
+                name: 'Great Barrier Reef',
+                popularAreas: [
+                    {
+                        name: 'Cairns',
+                        img: 'imges/Cairns.jpeg',
+                        desc: 'Gateway city to the reef offering tours, accommodations, and coastal activities.',
+                        cost: 'Free – $100+ (depending on tours)'
+                    },
+                    {
+                        name: 'Whitsunday Islands',
+                        img: 'imges/Whitsunday Islands.jpeg',
+                        desc: 'Tropical islands with white sand beaches and access to snorkeling and diving.',
+                        cost: '$50 – $200'
+                    },
+                    {
+                        name: 'Port Douglas',
+                        img: 'imges/Port Douglas.jpeg',
+                        desc: 'Charming town near the reef with luxury resorts and eco-tours.',
+                        cost: 'Free – $80'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Ochre Restaurant',
+                        img: 'imges/Ochre Restaurant.jpeg',
+                        desc: 'Fine dining with native Australian ingredients and waterfront views in Cairns.',
+                        rating: '4.5/5',
+                        price: '$30–80 per person'
+                    },
+                    {
+                        name: 'Salsa Bar & Grill',
+                        img: 'imges/Salsa Bar & Grill.jpeg',
+                        desc: 'Popular Port Douglas restaurant with modern Australian cuisine.',
+                        rating: '4.6/5',
+                        price: '$25–60 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Night Markets Cairns', desc: 'Souvenirs, local crafts, and street food vendors.', cost: 'Free – $40' },
+                    { name: 'Macrossan Street, Port Douglas', desc: 'Boutiques, galleries, and artisan products.', cost: 'Varies' }
+                ],
+                activities: [
+                    { name: 'Snorkeling & Diving', desc: 'Explore coral reefs and marine life in guided tours.', price: '$70 – $200' },
+                    { name: 'Glass-Bottom Boat Tour', desc: 'View the reef without getting wet, great for families.', price: '$40 – $90' }
+                ]
+            },
+            {
+                name: 'Gold Coast, Australia',
+                popularAreas: [
+                    {
+                        name: 'Surfers Paradise',
+                        img: 'imges/Surfers Paradise.jpeg',
+                        desc: 'Vibrant beachside district known for nightlife, shopping, and surfing.',
+                        cost: 'Free – $30'
+                    },
+                    {
+                        name: 'Burleigh Heads',
+                        img: 'imges/Burleigh Heads.jpeg',
+                        desc: 'Scenic beach with national park trails and great surf spots.',
+                        cost: 'Free'
+                    },
+                    {
+                        name: 'Springbrook National Park',
+                        img: 'imges/Springbrook National Park.jpeg',
+                        desc: 'Rainforest park featuring waterfalls, glow worm caves, and lookouts.',
+                        cost: '$5 – $20'
+                    }
+                ],
+                famousRestaurants: [
+                    {
+                        name: 'Rick Shores',
+                        img: 'imges/Rick Shores.jpeg',
+                        desc: 'Beachfront dining with Asian fusion dishes and ocean views.',
+                        rating: '4.7/5',
+                        price: '$40–90 per person'
+                    },
+                    {
+                        name: 'The Tropic',
+                        img: 'imges/The Tropic.jpeg',
+                        desc: 'Upscale modern Australian cuisine at Burleigh Pavilion.',
+                        rating: '4.5/5',
+                        price: '$30–70 per person'
+                    }
+                ],
+                shoppingSpots: [
+                    { name: 'Pacific Fair Shopping Centre', desc: 'One of Australia’s largest malls with global brands.', cost: 'Varies' },
+                    { name: 'The Oasis Shopping Centre', desc: 'Beachside shopping, dining, and wellness options.', cost: 'Free – $$$' }
+                ],
+                activities: [
+                    { name: 'Surfing Lessons', desc: 'Learn to surf with professional instructors on iconic beaches.', price: '$40 – $80' },
+                    { name: 'Theme Parks Tour', desc: 'Visit Dreamworld, Sea World, and Warner Bros. Movie World.', price: '$70 – $120' }
+                ]
+            }
+
+
+        ]
+        // يمكن إضافة باقي القارات والأماكن بنفس الأسلوب
+    };
+
+
+    function getQueryParams() {
+        const params = {};
+        window.location.search.substring(1).split("&").forEach(pair => {
+            const [key, value] = pair.split("=");
+            if (key && value) {
+                params[key] = decodeURIComponent(value);
+            }
+        });
+        return params;
+    }
+
+    function showPlace(continent, placeName) {
+        const places = data[continent];
+        if (!places) {
+            alert("Continent not found!");
+            return;
+        }
+
+        const place = places.find(p => p.name === placeName);
+        if (!place) {
+            alert("Place not found!");
+            return;
+        }
+        // Popular Areas
+        const popularContainer = document.getElementById('popularAreasList');
+        place.popularAreas?.forEach(area => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+    <h3>${area.name}</h3>
+    <img src="${area.img}" alt="${area.name}" style="width:100%;max-width:400px;border-radius:8px;" />
+    <p>${area.desc}</p>
+    <p><strong>Cost:</strong> ${area.cost}</p>
+    <hr/>
+  `;
+            popularContainer.appendChild(div);
+        });
+
+// Famous Restaurants
+        const restaurantContainer = document.getElementById('famousRestaurantsList');
+        place.famousRestaurants?.forEach(res => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+    <h3>${res.name}</h3>
+    <img src="${res.img}" alt="${res.name}" style="width:100%;max-width:400px;border-radius:8px;" />
+    <p>${res.desc}</p>
+    <p><strong>Rating:</strong> ${res.rating}</p>
+    <p><strong>Price:</strong> ${res.price}</p>
+    <hr/>
+  `;
+            restaurantContainer.appendChild(div);
+        });
+
+// Shopping Spots
+        const shoppingContainer = document.getElementById('shoppingSpotsList');
+        place.shoppingSpots?.forEach(shop => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+    <h3>${shop.name}</h3>
+    <p>${shop.desc}</p>
+    <p><strong>Cost:</strong> ${shop.cost}</p>
+    <hr/>
+  `;
+            shoppingContainer.appendChild(div);
+        });
+
+
+        document.getElementById('placeName').textContent = place.name;
+        document.getElementById('placeDesc').textContent = place.desc;
+        document.getElementById('placeImage').src = place.img;
+        document.getElementById('placeImage').alt = place.name;
+
+    }
+
+    const params = getQueryParams();
+    if (params.continent && params.place) {
+        showPlace(params.continent, params.place);
+    } else {
+        document.getElementById('placeContainer').innerHTML = '<p>Invalid place or continent specified.</p>';
+    }
+</script>
+
+</body>
+</html>

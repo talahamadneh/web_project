@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Explore Istanbul</title>
+  <style>
+    /* Popup styling */
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .popup.show {
+      opacity: 1;
+    }
+
+    /* Popup content */
+    .popup-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 350px;
+      width: 100%;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    .popup-content img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #28a745;
+      margin-bottom: 15px;
+    }
+
+    .popup-content button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Main content styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #073e0c;
+      margin-top: 40px;
+    }
+    .section {
+      margin: 20px auto;
+      max-width: 1200px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #073e0c;
+    }
+    h3 {
+      color: #333;
+      font-size: 20px;
+    }
+
+    /* Popular Areas */
+    .place-link {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      transition: background-color 0.3s;
+    }
+    .place-link:hover {
+      background-color: #e9ecef;
+    }
+    .place-link img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    /* Restaurants */
+    .restaurant-list .restaurant-item {
+      display: flex;
+      align-items: center;
+      background-color: #e9ecef;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    .restaurant-list .restaurant-item img {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      margin-right: 15px;
+      float: none;
+    }
+
+    /* Descriptions */
+    .place-description {
+      font-size: 16px;
+      color: #666;
+      line-height: 1.6;
+    }
+    .place-description strong {
+      color: #333;
+    }
+    /* Prices in green */
+    .place-description em,
+    .restaurant-item em,
+    .activity-item em {
+      color: #073e0c;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #073e0c;
+      color: white;
+      text-align: center;
+      padding: 8px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .footer button {
+      margin-top: 10px;
+      padding: 5px 10px;  /* Reduced padding to shrink the button */
+      background: white;
+      color: #073e0c;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Booking button */
+    .book-now-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 15px 30px;
+      background-color: #28a745;
+      color: white;
+      border-radius: 50px;
+      font-size: 18px;
+      text-transform: uppercase;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .book-now-btn:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      h1 { font-size: 22px; }
+      .popup-content { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Popup -->
+<div class="popup" id="welcomePopup">
+  <div class="popup-content">
+    <img src="imges/Istanbul.jpeg" alt="Istanbul" />
+    <h3>Welcome to Istanbul!</h3>
+    <p>Discover the beauty of Istanbul - a city that straddles two continents!</p>
+    <button onclick="closePopup()">Start Exploring</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<h1>Explore Istanbul, Turkey</h1>
+
+<div class="section">
+  <h2>📍 Popular Areas</h2>
+
+  <div class="place-link">
+    <img src="imges/SultanahmetCamii.jpeg" alt="Sultanahmet">
+    <div>
+      <h3>Sultanahmet</h3>
+      <p class="place-description">
+        Visit Hagia Sophia (25€), Blue Mosque (Free), and Topkapi Palace (20€).<br>
+        <strong>Estimated Entry Fee:</strong> <em>Free – 25€</em>
+      </p>
+    </div>
+  </div>
+
+  <div class="place-link">
+    <img src="imges/Taksim.jpeg" alt="Taksim">
+    <div>
+      <h3>Taksim Square</h3>
+      <p class="place-description">
+        Free to enter. Restaurants & cafés range from 10€ – 20€ per meal.<br>
+        <strong>Estimated Cost:</strong> <em>10€ – 20€</em>
+      </p>
+    </div>
+  </div>
+
+  <div class="place-link">
+    <img src="imges/Balat.jpeg" alt="Balat">
+    <div>
+      <h3>Balat</h3>
+      <p class="place-description">
+        Free to explore on foot. Local cafés range from 5€ – 10€.<br>
+        <strong>Estimated Cost:</strong> <em>5€ – 10€</em>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="section">
+  <h2>🍴 Famous Restaurants</h2>
+  <ul class="restaurant-list">
+    <li class="restaurant-item">
+      <img src="imges/Sultanahmet köftecisi .jpeg" alt="Sultanahmet Köftecisi">
+      <div>
+        <strong>Sultanahmet Köftecisi</strong> – Traditional Turkish meatballs. Rating: 4.5/5<br>
+        <strong>Avg Price:</strong> <em>$8–15 per person</em>
+      </div>
+    </li>
+    <li class="restaurant-item">
+      <img src="imges/360_ Restaurant.jpeg" alt="360 Istanbul">
+      <div>
+        <strong>360 Istanbul</strong> – Panoramic rooftop dining. Rating: 4.7/5<br>
+        <strong>Avg Price:</strong> <em>$30–60 per person</em>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>🛍️ Shopping Spots</h2>
+  <ul class="activity-list">
+    <li class="activity-item">
+      <strong>Grand Bazaar</strong> – Haggle for souvenirs, spices, and textiles.<br>
+      <strong>Estimated Budget:</strong> <em>5€ – 50€</em>
+    </li>
+    <li class="activity-item">
+      <strong>Istinye Park</strong> – Designer shopping & luxury brands.<br>
+      <strong>Typical Spend:</strong> <em>50€ – 300€+</em>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>🚢 Activities to Try</h2>
+  <ul class="activity-list">
+    <li class="activity-item">
+      <strong>Bosphorus Cruise</strong> – Scenic 1 to 2 hour boat ride.<br>
+      <strong>Price:</strong> <em>10€ – 25€</em>
+    </li>
+    <li class="activity-item">
+      <strong>Turkish Hammam</strong> – Traditional bath and massage experience.<br>
+      <strong>Price:</strong> <em>20€ – 40€</em>
+    </li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>🌍 Useful Links</h2>
+  <ul>
+    <li><a href="https://maps.google.com" target="_blank">Google Maps</a></li>
+    <li><a href="https://www.booking.com" target="_blank">Booking.com</a></li>
+    <li><a href="https://www.airbnb.com" target="_blank">Airbnb</a></li>
+    <li><a href="https://moovitapp.com" target="_blank">Moovit</a></li>
+    <li><a href="https://www.trafi.com" target="_blank">Trafi</a></li>
+    <li><a href="https://translate.google.com" target="_blank">Google Translate</a></li>
+  </ul>
+</div>
+
+
+<!-- Add Booking Button -->
+<div class="section" style="margin-bottom: 80px;">
+  <h2>📅 Plan Your Trip</h2>
+  <p>Book your stay and explore Istanbul like never before!</p>
+  <button class="book-now-btn" onclick="window.location.href='Booking.html'">Book Now</button>
+</div>
+
+
+
+
+
+<div class="footer">
+  <p>&copy; 2025 Explore Istanbul. All Rights Reserved.</p>
+</div>
+
+<script>
+  // Popup control
+  function closePopup() {
+    const popup = document.getElementById('welcomePopup');
+    popup.classList.remove('show');
+    popup.style.display = 'none';
+  }
+
+  window.onload = () => {
+    setTimeout(() => document.getElementById('welcomePopup').classList.add('show'), 1000);
+  };
+
+  // Navigation back to travel page
+  function goToTravelPage() {
+    window.location.href = 'page2.html';  // Update with actual travel page URL
+  }
+</script>
+
+</body>
+</html>
