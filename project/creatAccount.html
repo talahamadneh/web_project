@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Travel Agency</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .video-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+
+    .container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .form-box {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      width: 400px;
+      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-box h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .form-box input,
+    .form-box select {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+    }
+
+    .form-box button {
+      width: 100%;
+      padding: 15px;
+      background-color: #00b894;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .form-box button:hover {
+      background-color: #019875;
+    }
+
+    .create-account {
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    .create-account a {
+      color: #00b894;
+      text-decoration: none;
+    }
+
+    .create-account a:hover {
+      text-decoration: underline;
+    }
+
+    /* Success or error message */
+    #message {
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      min-height: 24px;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 5px;
+      transition: opacity 0.5s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .success-message {
+      background-color: #2ecc71;
+      color: white;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .error-message {
+      background-color: #e74c3c;
+      color: white;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Video background -->
+<video class="video-bg" autoplay muted loop>
+  <source src="WhatsApp Video 2025-04-21 at 12.50.28_5f2e1b9c.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+
+<!-- Overlay -->
+<div class="overlay"></div>
+
+<!-- Logo -->
+<div class="logo">✈ LIMITLESS JOURNEYS</div>
+
+<!-- Form -->
+<div class="container">
+  <div class="form-box">
+    <div id="message"></div>  <!-- Messages appear here -->
+
+    <h2>Create Account</h2>
+
+    <form id="signupForm" method="POST">
+      <input type="text" name="FullName" placeholder="Full Name" required />
+      <input type="email" name="Email" placeholder="Email" required />
+      <input type="password" name="Password" placeholder="Password" required />
+      <input type="tel" name="PhoneNum" placeholder="Phone Number" required />
+
+      <select name="AccType" required>
+        <option value="" disabled selected>Select Account Type</option>
+        <option value="customer">Customer</option>
+        <option value="employee">Employee</option>
+      </select>
+
+      <button type="submit" id="createBtn">Create Account</button>
+    </form>
+
+    <div class="create-account">
+      <span>Already have an account? <a href="anotherlogin.html">Sign In</a></span>
+    </div>
+  </div>
+</div>
+<script>
+  const form = document.getElementById('signupForm');
+  const messageDiv = document.getElementById('message');
+  let timeoutId;
+
+  function showMessage(text, type) {
+    clearTimeout(timeoutId);
+    messageDiv.textContent = text;
+    messageDiv.className = ''; // remove all classes
+    messageDiv.classList.add(type === 'success' ? 'success-message' : 'error-message');
+
+    // Make message visible
+    messageDiv.style.opacity = '1';
+    messageDiv.style.pointerEvents = 'auto';
+
+    // Hide message after 4 seconds with fade out
+    timeoutId = setTimeout(() => {
+      messageDiv.style.opacity = '0';
+      messageDiv.style.pointerEvents = 'none';
+    }, 4000);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('signup.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        showMessage(result.message, 'success');
+        form.reset();
+
+        // Redirect to project.html after 1.5 seconds
+        setTimeout(() => {
+          window.location.href = 'anotherlogin.html';
+        }, 1500);
+
+      } else {
+        showMessage(result.message, 'error');
+      }
+    } catch (error) {
+      showMessage('Server error, please try again later.', 'error');
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+</html>

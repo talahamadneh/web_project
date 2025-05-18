@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Us - LIMITLESS JOURNEYS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Navbar */
+    nav {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: background-color 0.3s;
+    }
+
+    nav.scrolled {
+      background-color: #111;
+    }
+
+    nav .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 3px;
+
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 5px 10px;
+      transition: all 0.3s;
+      border-radius: 5px;
+    }
+
+    nav ul li a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Hero Header */
+    header {
+      background: url('imges/about.jpeg') no-repeat center center/cover;
+      height: 90vh;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+
+    header h1,
+    header p {
+      z-index: 2;
+    }
+
+    header h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      text-shadow: none;
+    }
+
+    header p {
+      font-size: 1.5rem;
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+
+    /* Sections */
+    section {
+      padding: 80px 20px;
+      max-width: 1000px;
+      margin: auto;
+      animation: fadeIn 1s ease-in;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      color: #073e0c;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      width: 60px;
+      height: 3px;
+      background-color: #073e0c;
+      display: block;
+      margin: 10px auto 0;
+      border-radius: 5px;
+    }
+
+    .intro,
+    .vision,
+    .features {
+      margin-bottom: 40px;
+      font-size: 1.15rem;
+      line-height: 1.8;
+    }
+
+    .features ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .features li::before {
+      content: "✓";
+      color: #073e0c;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .testimonial {
+      background: #fff;
+      border-left: 4px solid #073e0c;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .testimonial:hover {
+      transform: translateY(-5px);
+    }
+
+    .testimonial p {
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .testimonial h4 {
+      color: #073e0c;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+      }
+
+      header p {
+        font-size: 1.1rem;
+        padding: 10px;
+      }
+    }
+  </style>
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function () {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+  </script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="logo">✈ LIMITLESS JOURNEYS</div>
+  <ul>
+    <li><a href="project.html">Home</a></li>
+    <li><a href="data.html">Profile</a></li>
+    <li><a href="about2.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero Header -->
+<header>
+  <h1>LIMITLESS JOURNEYS</h1>
+  <p>Your dream vacation is waiting for you — let’s get your trip started!</p>
+</header>
+
+<!-- About Section -->
+<section class="about">
+  <div class="section-title">Who We Are</div>
+  <div class="intro">
+    <p>
+      Welcome to <strong>LIMITLESS JOURNEYS</strong>, where the journey begins and memories are made.
+      We are passionate travel enthusiasts committed to bringing you the best of the world's destinations.
+      Whether you're a seasoned globetrotter or a first-time traveler, we aim to be your go-to resource for discovering the beauty, culture, and excitement that our planet has to offer.
+    </p>
+  </div>
+
+  <div class="vision">
+    <div class="section-title">Our Vision</div>
+    <p>
+      To create travel stories that inspire, connect, and leave a lasting impression — always close to nature, and always close to you.
+    </p>
+  </div>
+
+  <div class="features">
+    <div class="section-title">Why Travel With Us</div>
+    <ul>
+      <li>Personalized beachside adventures</li>
+      <li>Authentic, eco-friendly recommendations</li>
+      <li>Hassle-free planning and booking</li>
+      <li>Community of travelers, not tourists</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section>
+  <div class="section-title">What Our Travelers Say</div>
+  <div class="testimonials">
+    <div class="testimonial">
+      <p>"Absolutely breathtaking trip to Australia! Everything was smooth and magical."</p>
+      <h4>— Layla K., Lebanon 🇱🇧</h4>
+    </div>
+    <div class="testimonial">
+      <p>"Professional, passionate, and personal — I’ve never felt so cared for while traveling."</p>
+      <h4>— Sami A., Jordan 🇯🇴</h4>
+    </div>
+    <div class="testimonial">
+      <p>"The sea, the silence, the nature — exactly the getaway I needed. Thank you!"</p>
+      <h4>— Maya H., UAE 🇦🇪</h4>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

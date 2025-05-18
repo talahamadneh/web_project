@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <title>Continent Tours</title>
+    <style>
+        /* جميع أنماط CSS تبقى كما هي */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* ... باقي الأنماط ... */
+    </style>
+</head>
+<body>
+
+<?php
+session_start();
+if (!isset($_SESSION['AccType']) {
+    echo '<style>.add-trip-btn, .save-trip-btn { display: none !important; }</style>';
+}
+?>
+
+<!-- باقي HTML يبقى كما هو حتى قسم السكربت -->
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // بيانات القارات تبقى كما هي
+    const data = {
+        'Asia': { image: 'imges/asia.jpeg', regions: [
+                { name:'Istanbul, Turkey', desc:'Historical city bridging Europe & Asia.', img:'imges/Istanbul.jpeg', link:'istanbul.html' },
+                // ... باقي البيانات ...
+            ]},
+        // ... باقي القارات ...
+    };
+
+    // تعديل دالة submitTrip لحل مشكلة JSON
+    async function submitTrip(event) {
+        event.preventDefault();
+
+        const continent = document.getElementById('continentSelect').value;
+        const destination = document.getElementById('destinationSelect').value;
+        const seats = parseInt(document.getElementById('availableSeats').value);
+        const price = parseFloat(document.getElementById('pricePerPerson').value);
+
+        const startDates = document.getElementById('multiStartDates')._flatpickr?.selectedDates || [];
+        const endInputs = document.querySelectorAll('#datesContainer input[type="text"]');
+
+        if (startDates.length === 0 || endInputs.length !== startDates.length) {
+            showNotification('Please select valid start and end dates', false);
+            return;
+        }
+
+        if (seats <= 0 || price <= 0) {
+            showNotification('Please enter valid seats and price values', false);
+            return;
+        }
+
+        const tripsData = Array.from(endInputs).map((input, index) => ({
+            destination,
+            start_date: startDates[index].toISOString().split('T')[0],
+            end_date: input.value,
+            price_per_person: price,
+            available_seats: seats
+        }));
+
+        try {
+            const response = await fetch('save_trip.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tripsData)
+            });
+
+            const text = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                throw new Error(`Server returned invalid JSON: ${text}`);
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Server error');
+            }
+
+            if (data.success) {
+                showNotification(data.message, true);
+                setTimeout(() => {
+                    closeAddTripModal();
+                }, 2000);
+            } else {
+                showNotification(data.message, false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Error: ' + error.message, false);
+        }
+    }
+
+    // تعديل دالة saveTripDetails
+    async function saveTripDetails(event) {
+        event.preventDefault();
+
+        const tripData = {
+            continent: document.getElementById('saveContinent').value,
+            destination: document.getElementById('saveDestination').value,
+            start_date: document.getElementById('saveStartDate').value,
+            end_date: document.getElementById('saveEndDate').value,
+            seats: document.getElementById('saveSeats').value,
+            price: document.getElementById('savePrice').value
+        };
+
+        try {
+            const response = await fetch('save_trip.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tripData)
+            });
+
+            const text = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                throw new Error(`Server returned invalid JSON: ${text}`);
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Server error');
+            }
+
+            if (data.success) {
+                showNotification(data.message, true);
+                closeSaveTripModal();
+            } else {
+                showNotification(data.message, false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Error: ' + error.message, false);
+        }
+    }
+
+    // باقي الدوال تبقى كما هي مع تصحيح استخدام datesContainer
+    function updateDestinations() {
+        const continent = document.getElementById('continentSelect').value;
+        const destinationSelect = document.getElementById('destinationSelect');
+        destinationSelect.innerHTML = '<option value="" disabled selected>Select Destination</option>';
+
+        const destinations = {
+            Asia: ["Hanoi", "Kathmandu", "Tbilisi", "Phuket"],
+            Europe: ["Tallinn", "Riga", "Porto", "Valletta"],
+            "North America": ["Quebec", "Guadalajara", "Austin", "Seattle"],
+            "South America": ["Cusco", "Cartagena", "Salvador", "Montevideo"],
+            Africa: ["Zanzibar", "Lusaka", "Dar es Salaam", "Accra"],
+            Australia: ["Hobart", "Adelaide", "Darwin", "Canberra"]
+        };
+
+        if (destinations[continent]) {
+            destinations[continent].forEach(dest => {
+                const option = document.createElement('option');
+                option.value = dest;
+                option.textContent = dest;
+                destinationSelect.appendChild(option);
+            });
+        }
+    }
+
+    // تأكد من تعريف datesContainer بشكل صحيح
+    let datesContainer = document.getElementById('datesContainer');
+
+    // تهيئة flatpickr
+    document.addEventListener('DOMContentLoaded', function() {
+        datesContainer = document.getElementById('datesContainer');
+
+        flatpickr("#multiStartDates", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                const previousEndDates = {};
+                document.querySelectorAll('#datesContainer input[type="text"]').forEach(input => {
+                    previousEndDates[input.name] = input.value;
+                });
+
+                datesContainer.innerHTML = "";
+
+                selectedDates.forEach(date => {
+                    const dateString = date.toISOString().split('T')[0];
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "date-pair";
+
+                    const labelStart = document.createElement('div');
+                    labelStart.textContent = `📅 Start Date: ${dateString}`;
+                    labelStart.style.marginBottom = "5px";
+
+                    const labelEnd = document.createElement('label');
+                    labelEnd.textContent = "End Date:";
+                    labelEnd.style.display = "block";
+
+                    const endInput = document.createElement('input');
+                    endInput.type = "text";
+                    endInput.name = `endDate_${dateString}`;
+                    endInput.required = true;
+                    endInput.style.marginBottom = "15px";
+
+                    wrapper.appendChild(labelStart);
+                    wrapper.appendChild(labelEnd);
+                    wrapper.appendChild(endInput);
+
+                    datesContainer.appendChild(wrapper);
+
+                    flatpickr(endInput, {
+                        dateFormat: "Y-m-d",
+                        minDate: dateString,
+                        onChange: function(selectedDatesEnd, dateStrEnd, instanceEnd) {
+                            if (dateStrEnd < dateString) {
+                                alert('End date cannot be before start date!');
+                                endInput.value = '';
+                            }
+                        }
+                    });
+
+                    if (previousEndDates[endInput.name]) {
+                        endInput.value = previousEndDates[endInput.name];
+                    }
+                });
+            }
+        });
+
+        renderRegions('Asia');
+    });
+
+    // باقي الدوال تبقى كما هي
+    function renderRegions(continent) {
+        const container = document.getElementById('placesContainer');
+        container.innerHTML = '';
+        data[continent].regions.forEach(region => {
+            const place = document.createElement('div');
+            place.className = 'place';
+            place.innerHTML = `
+                <img src="${region.img}" alt="${region.name}" onerror="this.src='imges/default.jpg'">
+                <div class="place-info">
+                    <h3>${region.name}</h3>
+                    <p>${region.desc}</p>
+                    <a href="${region.link}" class="learn-more">Learn More</a>
+                </div>
+            `;
+            container.appendChild(place);
+        });
+    }
+
+    function showNotification(message, isSuccess) {
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+
+        notification.style.display = 'block';
+        notification.style.backgroundColor = isSuccess ? '#2E7D32' : '#C62828';
+        notification.style.color = 'white';
+        notificationText.textContent = message;
+
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                notification.style.display = 'none';
+                notification.style.opacity = '1';
+            }, 300);
+        }, 5000);
+    }
+</script>
+</body>
+</html>

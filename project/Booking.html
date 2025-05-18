@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Booking Form - Istanbul</title>
+    <style>
+        /* نفس الـ CSS بدون أي تغيير */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: #f0f4f8;
+            padding: 30px;
+        }
+
+        /* رسالة الحالة */
+        #message {
+            max-width: 700px;
+            margin: 0 auto 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            display: none;
+            text-align: center;
+        }
+
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        form {
+            background: #fff;
+            padding: 30px 40px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.15);
+            max-width: 700px;
+            margin: auto;
+            border-top: 5px solid #206a24;
+        }
+
+        h2 {
+            text-align: center;
+            color: #206a24;
+            margin-bottom: 35px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        #tripIdDisplay {
+            font-weight: 700;
+            font-size: 18px;
+            color: #073e0c;
+            margin-right: 165px; /* بدل left صارت right */
+            margin-top: 0;
+            text-align: left; /* تأكد الرقم محاذي لليسار */
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #073e0c;
+            margin-bottom: 18px;
+            border-bottom: 2px solid #c0d4f7;
+            padding-bottom: 6px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            display: inline-block;
+            width: 150px;
+            vertical-align: middle;
+            margin-right: 15px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: calc(100% - 170px);
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fafafa;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #206a24;
+            outline: none;
+            box-shadow: 0 0 6px rgb(7, 62, 12);
+            background-color: #fff;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 25px;
+            margin-top: 5px;
+            direction: rtl;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            background: #e8f0fe;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #5f7e54;
+            user-select: none;
+            white-space: nowrap;
+            gap: 6px;
+            font-size: 18px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            transform: scale(1.3);
+            margin-left: 7px;
+        }
+
+        .submit-btn {
+            background-color: #28a745;
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 40px auto 0;
+            width: 250px;
+            text-align: center;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        hr {
+            border: none;
+            border-bottom: 1.5px solid #cbd5e1;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- رسالة الحالة -->
+<div id="message"></div>
+
+<form id="bookingForm">
+    <h2>Trip Booking in Istanbul</h2>
+
+    <div class="section">
+        <div class="section-title">Trip Information</div>
+
+        <div class="form-row">
+            <label for="startDate">🏁 Start Date:</label>
+            <select id="startDate" name="startDate" required></select>
+        </div>
+
+        <div class="form-row">
+            <label for="endDate">🏁 End Date:</label>
+            <input type="text" id="endDate" name="endDate" readonly />
+        </div>
+
+        <div class="form-row" style="display: flex; align-items: center;">
+            <label style="width: 150px;">🆔 Trip ID:</label>
+            <div id="tripIdDisplay">-</div>
+        </div>
+
+
+
+
+        <div class="section">
+            <div class="section-title">Required Services</div>
+            <div class="checkbox-group" dir="rtl">
+                <label><input type="checkbox" name="hotel" /> 🏨 Hotel</label>
+                <label><input type="checkbox" name="car" /> 🚗 Car</label>
+                <label><input type="checkbox" name="meals" /> 🍽 Meals</label>
+                <label><input type="checkbox" name="guide" /> 🧭 Guide</label>
+            </div>
+
+            <div class="form-row" style="margin-top: 20px;">
+                <label for="hotelStars">⭐ Hotel Rating:</label>
+                <select id="hotelStars" name="hotelStars">
+                    <option value="">-- Select --</option>
+                    <option value="3">⭐️⭐️⭐️</option>
+                    <option value="4">⭐️⭐️⭐️⭐️</option>
+                    <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="carType">🚙 Car Type:</label>
+                <select id="carType" name="carType">
+                    <option value="">-- Select --</option>
+                    <option value="economy">Economy</option>
+                    <option value="suv">SUV</option>
+                    <option value="luxury">Luxury</option>
+                </select>
+            </div>
+            <hr />
+        </div>
+
+        <div class="section">
+            <div class="section-title">Contact Information</div>
+
+            <div class="form-row">
+                <label for="fullname">👤 Full Name:</label>
+                <input type="text" id="fullname" name="fullname" required />
+            </div>
+
+            <div class="form-row">
+                <label for="email">📧 Email Address:</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+
+            <div class="form-row">
+                <label for="notes">📝 Additional Notes:</label>
+                <textarea id="notes" name="notes" placeholder="Child seat, special needs, guide language..."></textarea>
+            </div>
+            <hr />
+        </div>
+
+
+        <div class="form-row">
+            <label for="pricePerPerson">💰 Price per Person:</label>
+            <input type="text" id="pricePerPerson" name="pricePerPerson" readonly />
+        </div>
+
+        <div class="form-row">
+            <label for="adults">👨‍👩‍👧‍👦 Number of Adults:</label>
+            <input type="number" id="adults" name="adults" min="1" inputmode="numeric" placeholder="Enter number of adults" required />
+        </div>
+
+        <div class="form-row">
+            <label for="children">🧒 Number of Children:</label>
+            <input type="number" id="children" name="children" min="0" inputmode="numeric" placeholder="Enter number of children" />
+        </div>
+
+
+        <hr />
+    </div>
+
+    <div class="section">
+        <div class="section-title">Total Calculation</div>
+        <div class="form-row">
+            <label for="totalPrice">💸 Total Price:</label>
+            <input type="text" id="totalPrice" name="totalPrice" readonly />
+        </div>
+
+        <div class="form-row">
+            <label for="totalPersons">👥 Total Persons:</label>
+            <input type="text" id="totalPersons" name="totalPersons" readonly />
+        </div>
+
+
+        <hr />
+    </div>
+    <button type="submit" class="submit-btn">Submit Booking</button>
+
+</form>
+
+<script>
+    const startDateSelect = document.getElementById("startDate");
+    const endDateInput = document.getElementById("endDate");
+    const priceInput = document.getElementById("pricePerPerson");
+    const adultsInput = document.getElementById("adults");
+    const childrenInput = document.getElementById("children");
+    const totalPriceInput = document.getElementById("totalPrice");
+    const messageDiv = document.getElementById("message");
+    const form = document.getElementById("bookingForm");
+
+    let trips = [];
+
+    fetch('get_trip_dates.php')
+        .then(response => response.json())
+        .then(data => {
+            trips = data;
+            trips.forEach((trip, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = trip.start_date;
+                startDateSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            showMessage("Error fetching data from server.", "error");
+            console.error('Error fetching data:', error);
+        });
+
+    startDateSelect.addEventListener("change", () => {
+        const selectedIndex = startDateSelect.value;
+        if (selectedIndex !== "") {
+            const trip = trips[selectedIndex];
+            console.log(trip);  // تأكد من وجود trip_id هنا
+            endDateInput.value = trip.end_date;
+            priceInput.value = trip.price_per_person + " $";
+            document.getElementById("tripIdDisplay").textContent = trip.trip_id || "-";
+
+            calculateTotal();
+        } else {
+            endDateInput.value = "";
+            priceInput.value = "";
+            totalPriceInput.value = "";
+        }
+    });
+
+
+    function calculateTotal() {
+        const selectedIndex = startDateSelect.value;
+        if (selectedIndex === "") {
+            totalPriceInput.value = "";
+            document.getElementById("totalPersons").value = "";
+            return;
+        }
+
+        const trip = trips[selectedIndex];
+        const adults = parseInt(adultsInput.value) || 0;
+        const children = parseInt(childrenInput.value) || 0;
+        const total = trip.price_per_person * adults + trip.price_per_person * 0.5 * children;
+        totalPriceInput.value = total.toFixed(2) + " $";
+
+        // تحديث عدد الأشخاص الكلي
+        document.getElementById("totalPersons").value = (adults + children) + " persons";
+    }
+
+
+    adultsInput.addEventListener("input", calculateTotal);
+    childrenInput.addEventListener("input", calculateTotal);
+
+    // دالة عرض الرسالة
+    function showMessage(text, type) {
+        messageDiv.textContent = text;
+        messageDiv.className = "";
+        if(type === "success") {
+            messageDiv.classList.add("success");
+        } else if(type === "error") {
+            messageDiv.classList.add("error");
+        }
+        messageDiv.style.display = "block";
+
+        setTimeout(() => {
+            messageDiv.style.display = "none";
+        }, 5000);
+    }
+
+    // عند إرسال الفورم
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        // تحقق بسيط على الحقول المطلوبة
+        if(startDateSelect.value === "") {
+            showMessage("Please select a trip start date.", "error");
+            return;
+        }
+
+        if(!adultsInput.value || adultsInput.value < 1) {
+            showMessage("Please enter a valid number of adults (1 or more).", "error");
+            return;
+        }
+
+        if(!form.checkValidity()) {
+            showMessage("Please fill out all required fields correctly.", "error");
+            return;
+        }
+
+
+        // لو كل شي تمام، نعرض رسالة نجاح
+        showMessage("Booking submitted successfully! Thank you for choosing our trips.", "success");
+
+        // هنا ممكن تضيف كود إرسال البيانات للسيرفر لو حابب (مثلاً عبر fetch أو XMLHttpRequest)
+
+
+        // إعادة تهيئة الحقول لو حبيت:
+        form.reset();
+        totalPriceInput.value = "";
+        endDateInput.value = "";
+        priceInput.value = "";
+        document.getElementById("totalPersons").value = "";
+
+    });
+</script>
+</body>
+</html>
